@@ -69,7 +69,9 @@ public:
     float get_net_eval(int tomove) const;
     void virtual_loss(void);
     void virtual_loss_undo(void);
-    void update(float eval);
+	void update(float eval);
+	void add_random_playouts_count();
+	void add_random_playouts_win();
 
     // Defined in UCTNodeRoot.cpp, only to be called on m_root in UCTSearch
     void randomize_first_proportionally();
@@ -81,6 +83,23 @@ public:
     UCTNode* get_nopass_child(FastState& state) const;
     std::unique_ptr<UCTNode> find_child(const int move);
     void inflate_all_children();
+
+	// Tree data
+	std::atomic<float> m_min_psa_ratio_children{ 2.0f };
+	std::vector<UCTNodePointer> m_children;
+
+	// Move
+	std::int16_t m_move;
+	// UCT
+	std::atomic<std::int16_t> m_virtual_loss{ 0 };
+	std::atomic<int> m_visits{ 0 };
+	// UCT eval
+	float m_score;
+	// Original net eval for this node (not children).
+	float m_net_eval{ 0.0f };
+
+	int random_playouts_count{ 0 };
+	int random_playouts_win{ 0 };
 
 private:
     enum Status : char {
@@ -100,24 +119,16 @@ private:
     // tens of millions of instances of these.  Please put extra caution
     // if you want to add/remove/reorder any variables here.
 
-    // Move
-    std::int16_t m_move;
-    // UCT
-    std::atomic<std::int16_t> m_virtual_loss{0};
-    std::atomic<int> m_visits{0};
-    // UCT eval
-    float m_score;
-    // Original net eval for this node (not children).
-    float m_net_eval{0.0f};
+
+
+
     std::atomic<double> m_blackevals{0.0};
     std::atomic<Status> m_status{ACTIVE};
     // Is someone adding scores to this node?
     bool m_is_expanding{false};
     SMP::Mutex m_nodemutex;
 
-    // Tree data
-    std::atomic<float> m_min_psa_ratio_children{2.0f};
-    std::vector<UCTNodePointer> m_children;
+
 };
 
 #endif

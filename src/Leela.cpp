@@ -184,13 +184,16 @@ static void parse_commandline(int argc, char *argv[]) {
         myprintf("Logging to %s.\n", cfg_logfile.c_str());
         cfg_logfile_handle = fopen(cfg_logfile.c_str(), "a");
     }
-
+	/*
     if (vm.count("weights")) {
         cfg_weightsfile = vm["weights"].as<std::string>();
     } else {
         printf("A network weights file is required to use the program.\n");
         exit(EXIT_FAILURE);
     }
+	*/
+
+	cfg_weightsfile = "D:\\leela\\leela-zero\\msvc\\VS2017\\x64\\Debug\\leelaz-model-swa-16-128000.txt";
 
     if (vm.count("gtp")) {
         cfg_gtp_mode = true;

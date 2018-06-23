@@ -16,6 +16,10 @@
     along with Leela Zero.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+
+
+
+
 #include "config.h"
 #include "UCTSearch.h"
 
@@ -37,6 +41,8 @@
 #include "Utils.h"
 
 using namespace Utils;
+
+#define M_LOG2E 1.44269504088896340736 // log2(e)
 
 constexpr int UCTSearch::UNLIMITED_PLAYOUTS;
 
@@ -155,6 +161,51 @@ float UCTSearch::get_min_psa_ratio() const {
         return 0.001f;
     }
     return 0.0f;
+}
+
+SearchResult UCTSearch::play_simulation_sh(GameState & currstate,
+	UCTNode* const node) {
+	const auto color = currstate.get_to_move();
+	auto result = SearchResult{};
+
+	node->virtual_loss();
+
+	if (node->expandable()) {
+		if (currstate.get_passes() >= 2) {
+			auto score = currstate.final_score();
+			result = SearchResult::from_score(score);
+		}
+		else if (m_nodes < MAX_TREE_SIZE) {
+			float eval;
+			const auto had_children = node->has_children();
+			const auto success =
+				node->create_children(m_nodes, currstate, eval,
+					get_min_psa_ratio());
+			if (!had_children && success) {
+				result = SearchResult::from_eval(eval);
+			}
+		}
+	}
+
+	if (node->has_children() && !result.valid()) {
+		auto next = node->uct_select_child(color, node == m_root.get());
+		auto move = next->get_move();
+
+		currstate.play_move(move);
+		if (move != FastBoard::PASS && currstate.superko()) {
+			next->invalidate();
+		}
+		else {
+			result = play_simulation_sh(currstate, next);
+		}
+	}
+
+	if (result.valid()) {
+		node->update(result.eval());
+	}
+	node->virtual_loss_undo();
+
+	return result;
 }
 
 SearchResult UCTSearch::play_simulation(GameState & currstate,
@@ -570,6 +621,185 @@ void UCTWorker::operator()() {
 
 void UCTSearch::increment_playouts() {
     m_playouts++;
+}
+
+int UCTSearch::gen_random_move(GameState& state, Random rd)
+{
+	auto to_move = state.board.get_to_move();
+	std::vector<int> legal_moves;
+	for (auto i = 0; i < BOARD_SQUARES; i++) {
+		const auto x = i % BOARD_SIZE;
+		const auto y = i / BOARD_SIZE;
+		const auto vertex = state.board.get_vertex(x, y);
+		if (state.is_move_legal(to_move, vertex)) {
+			legal_moves.emplace_back(vertex);
+		}
+	}
+	if (legal_moves.size() == 0)
+		return -1;
+
+	
+	//auto move_idx = rd.randuint64(legal_moves.size());
+	auto move_idx = rand() % legal_moves.size();
+
+	return legal_moves[move_idx];
+}
+
+int UCTSearch::random_playout(GameState& state, Random rd)
+{
+	int side = state.get_to_move();
+	float winrate;
+	int res_move_old,res_move_new = 1;
+	do
+	{
+		res_move_old = res_move_new;
+		res_move_new = gen_random_move(state,rd);
+		auto to_move = state.board.get_to_move();
+		state.play_move(res_move_new);
+
+	} while (res_move_new != -1 && res_move_old !=-1);
+	const auto raw_netlist = Network::get_scored_moves(
+		&state, Network::Ensemble::RANDOM_SYMMETRY);
+
+	// DCNN returns winrate as side to move
+	if (state.get_to_move() == side)
+		winrate = raw_netlist.winrate;
+	else
+		winrate = 1.0f - raw_netlist.winrate;
+	//myprintf("side = %d,winrate = %f \n",
+	//	side,winrate);
+	//state.display_state();
+	if (winrate > 0.5)
+		return 1;
+	else
+		return -1;
+}
+std::vector<int> UCTSearch::get_new_round_children(std::vector<int> child_in_round)
+{
+	std::vector<int> new_children_in_round;
+
+	std::vector<float> child_sh_score_in_round;
+	int n = child_in_round.size();
+	for (int tmpj = 0; tmpj < n; tmpj++)
+	{
+		int child_idx = child_in_round[tmpj];
+		int child_rp_count = m_root->m_children[child_idx]->random_playouts_count;
+		int child_rp_win = m_root->m_children[tmpj]->random_playouts_win;
+		float child_rp_winrate = 1.0f * child_rp_win / child_rp_count;
+		child_sh_score_in_round.emplace_back(child_rp_winrate);
+	}
+
+	for (int i = 0; i < n - 1; i++) {
+		for (int j = 0; j < n - i - 1; j++) {
+			if (child_sh_score_in_round[j] < child_sh_score_in_round[j + 1]) {
+				float tempf = child_sh_score_in_round[j];
+				int tempi = child_in_round[j];
+				child_sh_score_in_round[j] = child_sh_score_in_round[j + 1];
+				child_in_round[j] = child_in_round[j + 1];
+				child_sh_score_in_round[j + 1] = tempf;
+				child_in_round[j + 1] = tempi;
+			}
+		}
+	}
+
+	n = n / 2;
+	for (int tmpj = 0; tmpj < n; tmpj++)
+	{
+		new_children_in_round.emplace_back(child_in_round[tmpj]);
+	}
+
+	return new_children_in_round;
+}
+
+int UCTSearch::think_sh(int color, passflag_t passflag,int coin) {
+	coin = 40000;
+	update_root();
+	Random rd = Random(time(NULL));
+	srand((unsigned)time(NULL));
+	// set side to move
+	m_rootstate.board.set_to_move(color);
+
+	
+
+	m_root->prepare_root_node(color, m_nodes, m_rootstate);
+	//TODO:children's eval
+	int child_count = m_root->m_children.size();
+	int round_count = log(child_count) * M_LOG2E;
+	int round_coin = coin / round_count;
+
+	myprintf("child_count = %d, round_count = %d, round_coin = %d,  \n",
+		child_count,
+		round_count,
+		round_coin);
+	//rp_count[tmpj], rp_win[tmpj]);
+
+
+	std::vector<int> child_in_round;
+	std::vector<int> rp_count(child_count);
+	std::vector<int> rp_win(child_count);
+
+	for (int tmpj = 0; tmpj < m_root->m_children.size()-1; tmpj++)
+		child_in_round.emplace_back(tmpj);
+
+
+	while (child_in_round.size() != 1)
+	{
+		int node_coin = round_coin / child_in_round.size();
+
+		myprintf("child_in_round.size = %d, node_coin = %d, round_coin = %d,  \n",
+			child_in_round.size(),
+			node_coin,
+			round_coin);
+
+		for (int tmpj = 0; tmpj < child_in_round.size(); tmpj++)
+		{
+			int child_idx = child_in_round[tmpj];
+			for (int tmpi = 0; tmpi < node_coin; tmpi++)
+			{
+				auto currstate = std::make_unique<GameState>(m_rootstate);
+				currstate->play_move(m_root->m_children[child_idx]->get_move());
+				auto rp_res = -random_playout(*currstate, rd);
+				//rp_count[tmpj] += 1;
+				m_root->m_children[child_idx]->add_random_playouts_count();
+				if (rp_res == 1)
+					m_root->m_children[child_idx]->add_random_playouts_win();
+				//rp_win[tmpj] += 1;
+			}
+		}
+
+		child_in_round = get_new_round_children(child_in_round);
+	}
+
+
+	/*
+	for (int tmpj = 0; tmpj < m_root->m_children.size(); tmpj++)
+	{
+		for (int tmpi = 0; tmpi < 3; tmpi++)
+		{
+			auto currstate = std::make_unique<GameState>(m_rootstate);
+			currstate->play_move(m_root->m_children[tmpj]->get_move());
+			auto rp_res = -random_playout(*currstate, rd);
+			//rp_count[tmpj] += 1;
+			m_root->m_children[tmpj]->add_random_playouts_count();
+			if (rp_res == 1)
+				m_root->m_children[tmpj]->add_random_playouts_win();
+				//rp_win[tmpj] += 1;
+		}
+	}
+	*/
+
+	for (int tmpj = 0; tmpj < m_root->m_children.size(); tmpj++)
+	{
+		myprintf("move = %d, score = %f, rp_count = %d, rp_wins = %d,  \n",
+			m_root->m_children[tmpj].get_move(), 
+			m_root->m_children[tmpj]->m_score, 
+			m_root->m_children[tmpj]->random_playouts_count, 
+			m_root->m_children[tmpj]->random_playouts_win);
+			//rp_count[tmpj], rp_win[tmpj]);
+	}
+
+	return 0;
+
 }
 
 int UCTSearch::think(int color, passflag_t passflag) {

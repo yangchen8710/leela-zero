@@ -121,6 +121,16 @@ bool UCTNode::create_children(std::atomic<int>& nodecount,
     return true;
 }
 
+void UCTNode::add_random_playouts_count() 
+{
+	random_playouts_count++;
+}
+
+void UCTNode::add_random_playouts_win()
+{
+	random_playouts_win++;
+}
+
 void UCTNode::link_nodelist(std::atomic<int>& nodecount,
                             std::vector<Network::ScoreVertexPair>& nodelist,
                             float min_psa_ratio) {

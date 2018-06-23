@@ -31,7 +31,7 @@
 #include "FastState.h"
 #include "GameState.h"
 #include "UCTNode.h"
-
+#include "Random.h"
 
 class SearchResult {
 public:
@@ -92,13 +92,19 @@ public:
         std::numeric_limits<int>::max() / 2;
 
     UCTSearch(GameState& g);
-    int think(int color, passflag_t passflag = NORMAL);
+	int think(int color, passflag_t passflag = NORMAL);
+	int think_sh(int color, passflag_t passflag = NORMAL,int test = 0);
+	int gen_random_move(GameState& state, Random rd);
+	std::vector<int> get_new_round_children(std::vector<int> child_in_round);
+	int UCTSearch::random_playout(GameState& state, Random rd);
     void set_playout_limit(int playouts);
     void set_visit_limit(int visits);
     void ponder();
     bool is_running() const;
     void increment_playouts();
-    SearchResult play_simulation(GameState& currstate, UCTNode* const node);
+	
+	SearchResult play_simulation(GameState& currstate, UCTNode* const node);
+	SearchResult play_simulation_sh(GameState& currstate, UCTNode* const node);
 
 private:
     float get_min_psa_ratio() const;
