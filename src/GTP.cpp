@@ -405,6 +405,10 @@ bool GTP::execute(GameState & game, std::string xinput) {
 			{
 				game.set_to_move(who);
 				int move = search->think_sh(who, 0, 0);
+				 move = search->think_sh(who, 0, 0);
+				 move = search->think_sh(who, 0, 0);
+				 move = search->think_sh(who, 0, 0);
+				 move = search->think_sh(who, 0, 0);
 				game.play_move(move);
 
 				std::string vertex = game.move_to_text(move);

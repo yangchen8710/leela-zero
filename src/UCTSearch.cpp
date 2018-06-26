@@ -712,7 +712,7 @@ std::vector<int> UCTSearch::get_new_round_children(std::vector<int> child_in_rou
 }
 
 int UCTSearch::think_sh(int color, passflag_t passflag,int coin) {
-	coin = 40000;
+	coin = 50000;
 	update_root();
 	Random rd = Random(time(NULL));
 	srand((unsigned)time(NULL));
@@ -722,8 +722,8 @@ int UCTSearch::think_sh(int color, passflag_t passflag,int coin) {
 	
 
 	m_root->prepare_root_node(color, m_nodes, m_rootstate);
-	//TODO:children's eval
-	int child_count = m_root->m_children.size();
+	
+	int child_count = m_root->m_children.size()-1;
 	int round_count = log(child_count) * M_LOG2E;
 	int round_coin = coin / round_count;
 
@@ -731,14 +731,27 @@ int UCTSearch::think_sh(int color, passflag_t passflag,int coin) {
 		child_count,
 		round_count,
 		round_coin);
+
+	//TODO:children's eval
+	for (int tmpj = 0; tmpj < child_count - 1; tmpj++)
+	{
+		auto node = m_root->m_children[tmpj].get();
+		auto currstate = std::make_unique<GameState>(m_rootstate);
+		currstate->play_move(m_root->m_children[tmpj]->get_move());
+		float root_eval;
+		if (node->expandable())
+		{
+			node->create_children(m_nodes, *currstate, root_eval);
+		}
+	}
+
+
 	//rp_count[tmpj], rp_win[tmpj]);
 
 
 	std::vector<int> child_in_round;
-	std::vector<int> rp_count(child_count);
-	std::vector<int> rp_win(child_count);
 
-	for (int tmpj = 0; tmpj < m_root->m_children.size()-1; tmpj++)
+	for (int tmpj = 0; tmpj < child_count; tmpj++)
 		child_in_round.emplace_back(tmpj);
 
 
@@ -770,35 +783,20 @@ int UCTSearch::think_sh(int color, passflag_t passflag,int coin) {
 		child_in_round = get_new_round_children(child_in_round);
 	}
 
-
-	/*
+	myprintf("move\tpolicy\t\teval\trp_count\trp_wins\n");
 	for (int tmpj = 0; tmpj < m_root->m_children.size(); tmpj++)
 	{
-		for (int tmpi = 0; tmpi < 3; tmpi++)
-		{
-			auto currstate = std::make_unique<GameState>(m_rootstate);
-			currstate->play_move(m_root->m_children[tmpj]->get_move());
-			auto rp_res = -random_playout(*currstate, rd);
-			//rp_count[tmpj] += 1;
-			m_root->m_children[tmpj]->add_random_playouts_count();
-			if (rp_res == 1)
-				m_root->m_children[tmpj]->add_random_playouts_win();
-				//rp_win[tmpj] += 1;
-		}
-	}
-	*/
+		std::string vertex = m_rootstate.move_to_text(m_root->m_children[tmpj].get_move());
 
-	for (int tmpj = 0; tmpj < m_root->m_children.size(); tmpj++)
-	{
-		myprintf("move = %d, score = %f, rp_count = %d, rp_wins = %d,  \n",
-			m_root->m_children[tmpj].get_move(), 
-			m_root->m_children[tmpj]->m_score, 
+		myprintf("%s\t%f\t%f\t%d\t%d\n",
+			vertex.c_str(),
+			m_root->m_children[tmpj]->m_score,
+			m_root->m_children[tmpj]->m_net_eval,
 			m_root->m_children[tmpj]->random_playouts_count, 
 			m_root->m_children[tmpj]->random_playouts_win);
 			//rp_count[tmpj], rp_win[tmpj]);
 	}
-
-	return 0;
+	return m_root->m_children[child_in_round[0]]->get_move();
 
 }
 
