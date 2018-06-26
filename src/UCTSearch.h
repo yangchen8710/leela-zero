@@ -96,7 +96,7 @@ public:
 	int think_sh(int color, passflag_t passflag = NORMAL,int test = 0);
 	int gen_random_move(GameState& state, Random rd);
 	std::vector<int> get_new_round_children(std::vector<int> child_in_round);
-	int UCTSearch::random_playout(GameState& state, Random rd);
+	int random_playout(GameState& state, Random rd);
     void set_playout_limit(int playouts);
     void set_visit_limit(int visits);
     void ponder();
