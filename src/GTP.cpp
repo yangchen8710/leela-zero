@@ -405,15 +405,19 @@ bool GTP::execute(GameState & game, std::string xinput) {
 			{
 				int move;
 				std::string vertex;
-				game.set_to_move(who);
-				move = search->think_sh(who, 0, 0);
-				vertex = game.move_to_text(move);
-				gtp_printf(id, "sh:%s", vertex.c_str());
 
 				game.set_to_move(who);
 				move = search->think(who);
 				vertex = game.move_to_text(move);
 				gtp_printf(id, "uct:%s", vertex.c_str());
+
+				game.set_to_move(who);
+				move = search->think_sh(who, 0, move);
+				move = search->think_sh(who, 0, move);
+				vertex = game.move_to_text(move);
+				gtp_printf(id, "sh:%s", vertex.c_str());
+
+
 
 			}
 		}

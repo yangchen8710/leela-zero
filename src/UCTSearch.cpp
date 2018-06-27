@@ -745,8 +745,9 @@ std::vector<int> UCTSearch::get_new_round_children(std::vector<int> child_in_rou
 	return new_children_in_round;
 }
 
-int UCTSearch::think_sh(int color, passflag_t passflag,int coin) {
-	coin = 5000;
+int UCTSearch::think_sh(int color, passflag_t passflag,int test) {
+	
+	int coin = 20000;
 	update_root();
 	Random rd = Random(time(NULL));
 	srand((unsigned)time(NULL));
@@ -791,9 +792,10 @@ int UCTSearch::think_sh(int color, passflag_t passflag,int coin) {
 			child_in_round.emplace_back(tmpj);
 	}
 
-
+	int round_count = 1;
 	while (child_in_round.size() != 1)
 	{
+		int old_r = round_count;
 		int node_coin = round_coin / child_in_round.size();
 
 		myprintf("child_in_round.size = %d, node_coin = %d, round_coin = %d,  \n",
@@ -818,6 +820,17 @@ int UCTSearch::think_sh(int color, passflag_t passflag,int coin) {
 		}
 
 		child_in_round = get_new_round_children(child_in_round);
+		for (int tmpi = 0; tmpi < child_in_round.size(); tmpi++)
+		{
+			if (m_root->m_children[child_in_round[0]]->get_move() == test)
+			{
+				round_count++;
+				myprintf("best move in round%d.\n", round_count);
+				break;
+			}
+		}
+		if (old_r == round_count)
+			return 0;
 	}
 
 	myprintf("move\tpolicy\t\teval\trp_count\trp_wins\n");
