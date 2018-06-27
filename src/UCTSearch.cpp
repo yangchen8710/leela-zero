@@ -792,7 +792,7 @@ int UCTSearch::think_sh(int color, passflag_t passflag,int test) {
 			child_in_round.emplace_back(tmpj);
 	}
 
-	int round_count = 1;
+	round_count = 1;
 	while (child_in_round.size() != 1)
 	{
 		int old_r = round_count;
