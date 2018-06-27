@@ -889,8 +889,8 @@ int UCTSearch::think(int color, passflag_t passflag) {
 		myprintf("%s\t%f\t%f\t%d\t%d\n",
 			vertex.c_str(),
 			m_root->m_children[tmpj]->get_score(),
-			m_root->m_children[tmpj]->m_net_eval,
-			m_root->m_children[tmpj]->random_playouts_count,
+			m_root->m_children[tmpj]->get_eval(),
+			m_root->m_children[tmpj]->get_visits(),
 			m_root->m_children[tmpj]->random_playouts_win);
 		//rp_count[tmpj], rp_win[tmpj]);
 	}
