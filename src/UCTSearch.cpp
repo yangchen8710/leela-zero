@@ -627,6 +627,8 @@ int UCTSearch::gen_random_move(GameState& state, Random rd)
 {
 	const auto raw_netlist = Network::get_scored_moves(
 		&state, Network::Ensemble::RANDOM_SYMMETRY);
+	if (raw_netlist.winrate > 0.9 || raw_netlist.winrate > 0.1)
+		return FastBoard::PASS;
 
 	std::vector<Network::ScoreVertexPair> nodelist;
 	auto to_move = state.board.get_to_move();
