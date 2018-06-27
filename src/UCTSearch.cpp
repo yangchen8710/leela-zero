@@ -825,12 +825,12 @@ int UCTSearch::think(int color, passflag_t passflag) {
 	{
 		std::string vertex = m_rootstate.move_to_text(m_root->m_children[tmpj].get_move());
 
-		myprintf("%s\t%f\t%f\t%d\t%d\n",
+		myprintf("%s\t%f\t%f\t%f\t%d\n",
 			vertex.c_str(),
 			m_root->m_children[tmpj]->get_score(),
 			m_root->m_children[tmpj]->get_eval(color),
-			m_root->m_children[tmpj]->get_visits(),
-			m_root->m_children[tmpj]->random_playouts_win);
+			m_root->m_children[tmpj]->m_net_eval,
+			m_root->m_children[tmpj]->get_visits());
 		//rp_count[tmpj], rp_win[tmpj]);
 	}
 
@@ -899,12 +899,12 @@ int UCTSearch::think(int color, passflag_t passflag) {
 	{
 		std::string vertex = m_rootstate.move_to_text(m_root->m_children[tmpj].get_move());
 
-		myprintf("%s\t%f\t%f\t%d\t%d\n",
+		myprintf("%s\t%f\t%f\t%f\t%d\n",
 			vertex.c_str(),
 			m_root->m_children[tmpj]->get_score(),
 			m_root->m_children[tmpj]->get_eval(color),
-			m_root->m_children[tmpj]->get_visits(),
-			m_root->m_children[tmpj]->random_playouts_win);
+			m_root->m_children[tmpj]->m_net_eval,
+			m_root->m_children[tmpj]->get_visits());
 		//rp_count[tmpj], rp_win[tmpj]);
 	}
 
