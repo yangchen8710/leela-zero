@@ -797,12 +797,12 @@ int UCTSearch::think_sh(int color, passflag_t passflag,int test) {
 	{
 		int old_r = round_count;
 		int node_coin = round_coin / child_in_round.size();
-
+		/*
 		myprintf("child_in_round.size = %d, node_coin = %d, round_coin = %d,  \n",
 			child_in_round.size(),
 			node_coin,
 			round_coin);
-
+		*/
 		for (int tmpj = 0; tmpj < child_in_round.size(); tmpj++)
 		{
 			int child_idx = child_in_round[tmpj];
@@ -824,8 +824,8 @@ int UCTSearch::think_sh(int color, passflag_t passflag,int test) {
 		{
 			if (m_root->m_children[child_in_round[tmpi]]->get_move() == test)
 			{
-				round_count++;
 				myprintf("best move in round%d.\n", round_count);
+				round_count++;
 				break;
 			}
 		}
@@ -870,7 +870,7 @@ int UCTSearch::think(int color, passflag_t passflag) {
     // create a sorted list of legal moves (make sure we
     // play something legal and decent even in time trouble)
     m_root->prepare_root_node(color, m_nodes, m_rootstate);
-
+	/*
 	for (int tmpj = 0; tmpj < m_root->m_children.size(); tmpj++)
 	{
 		std::string vertex = m_rootstate.move_to_text(m_root->m_children[tmpj].get_move());
@@ -883,7 +883,7 @@ int UCTSearch::think(int color, passflag_t passflag) {
 			m_root->m_children[tmpj]->get_visits());
 		//rp_count[tmpj], rp_win[tmpj]);
 	}
-
+	*/
     m_run = true;
     int cpus = cfg_num_threads;
     ThreadGroup tg(thread_pool);
@@ -944,7 +944,7 @@ int UCTSearch::think(int color, passflag_t passflag) {
                  (m_playouts * 100.0) / (elapsed_centis+1));
     }
     int bestmove = get_best_move(passflag);
-
+	/*
 	for (int tmpj = 0; tmpj < m_root->m_children.size(); tmpj++)
 	{
 		std::string vertex = m_rootstate.move_to_text(m_root->m_children[tmpj].get_move());
@@ -957,7 +957,7 @@ int UCTSearch::think(int color, passflag_t passflag) {
 			m_root->m_children[tmpj]->get_visits());
 		//rp_count[tmpj], rp_win[tmpj]);
 	}
-
+	*/
     // Copy the root state. Use to check for tree re-use in future calls.
     m_last_rootstate = std::make_unique<GameState>(m_rootstate);
     return bestmove;

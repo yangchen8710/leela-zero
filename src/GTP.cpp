@@ -405,6 +405,10 @@ bool GTP::execute(GameState & game, std::string xinput) {
 			{
 				int move;
 				std::string vertex;
+				int movenum = 999;
+				auto sgftree = std::make_unique<SGFTree>();
+				sgftree->load_from_file("01.sgf");
+				game = sgftree->follow_mainline_state(movenum - 1);
 
 				game.set_to_move(who);
 				move = search->think(who);
