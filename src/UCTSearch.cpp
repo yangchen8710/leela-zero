@@ -712,7 +712,7 @@ std::vector<int> UCTSearch::get_new_round_children(std::vector<int> child_in_rou
 }
 
 int UCTSearch::think_sh(int color, passflag_t passflag,int coin) {
-	coin = 50000;
+	coin = 5000;
 	update_root();
 	Random rd = Random(time(NULL));
 	srand((unsigned)time(NULL));
@@ -733,7 +733,7 @@ int UCTSearch::think_sh(int color, passflag_t passflag,int coin) {
 		round_coin);
 
 	//TODO:children's eval
-	for (int tmpj = 0; tmpj < child_count - 1; tmpj++)
+	for (int tmpj = 0; tmpj < child_count + 1; tmpj++)
 	{
 		auto node = m_root->m_children[tmpj].get();
 		auto currstate = std::make_unique<GameState>(m_rootstate);
@@ -751,8 +751,11 @@ int UCTSearch::think_sh(int color, passflag_t passflag,int coin) {
 
 	std::vector<int> child_in_round;
 
-	for (int tmpj = 0; tmpj < child_count; tmpj++)
-		child_in_round.emplace_back(tmpj);
+	for (int tmpj = 0; tmpj < child_count + 1; tmpj++)
+	{
+		if(m_root->m_children[tmpj].get_move()!=FastBoard::PASS)
+			child_in_round.emplace_back(tmpj);
+	}
 
 
 	while (child_in_round.size() != 1)
