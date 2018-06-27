@@ -882,6 +882,19 @@ int UCTSearch::think(int color, passflag_t passflag) {
     }
     int bestmove = get_best_move(passflag);
 
+	for (int tmpj = 0; tmpj < m_root->m_children.size(); tmpj++)
+	{
+		std::string vertex = m_rootstate.move_to_text(m_root->m_children[tmpj].get_move());
+
+		myprintf("%s\t%f\t%f\t%d\t%d\n",
+			vertex.c_str(),
+			m_root->m_children[tmpj]->get_score(),
+			m_root->m_children[tmpj]->m_net_eval,
+			m_root->m_children[tmpj]->random_playouts_count,
+			m_root->m_children[tmpj]->random_playouts_win);
+		//rp_count[tmpj], rp_win[tmpj]);
+	}
+
     // Copy the root state. Use to check for tree re-use in future calls.
     m_last_rootstate = std::make_unique<GameState>(m_rootstate);
     return bestmove;

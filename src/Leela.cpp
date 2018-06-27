@@ -193,7 +193,7 @@ static void parse_commandline(int argc, char *argv[]) {
     }
 	*/
 
-	cfg_weightsfile = "D:\\leela\\leela-zero\\msvc\\VS2017\\x64\\Debug\\leelaz-model-swa-16-128000.txt";
+	cfg_weightsfile = "leelaz-model-swa-16-128000.txt";
 
     if (vm.count("gtp")) {
         cfg_gtp_mode = true;
