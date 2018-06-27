@@ -622,7 +622,7 @@ void UCTWorker::operator()() {
 void UCTSearch::increment_playouts() {
     m_playouts++;
 }
-
+/*
 int UCTSearch::gen_random_move(GameState& state, Random rd)
 {
 	const auto raw_netlist = Network::get_scored_moves(
@@ -672,6 +672,28 @@ int UCTSearch::gen_random_move(GameState& state, Random rd)
 			return nodelist[tmpj].second;
 	}
 	return nodelist[nodelist.size()-1].second;
+}
+*/
+int UCTSearch::gen_random_move(GameState& state, Random rd)
+{
+	auto to_move = state.board.get_to_move();
+	std::vector<int> legal_moves;
+	for (auto i = 0; i < BOARD_SQUARES; i++) {
+		const auto x = i % BOARD_SIZE;
+		const auto y = i / BOARD_SIZE;
+		const auto vertex = state.board.get_vertex(x, y);
+		if (state.is_move_legal(to_move, vertex)) {
+			legal_moves.emplace_back(vertex);
+		}
+	}
+	if (legal_moves.size() == 0)
+		return -1;
+
+
+	//auto move_idx = rd.randuint64(legal_moves.size());
+	auto move_idx = rand() % legal_moves.size();
+
+	return legal_moves[move_idx];
 }
 
 int UCTSearch::random_playout(GameState& state, Random rd)

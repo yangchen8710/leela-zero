@@ -406,22 +406,30 @@ bool GTP::execute(GameState & game, std::string xinput) {
 				int move;
 				std::string vertex;
 
-				for (int tmpj = 1; tmpj < 6; tmpj++)
+				for (int tmpj = 0; tmpj < 6; tmpj++)
 				{
-					int movenum = 999;
-					auto sgftree = std::make_unique<SGFTree>();
-					sgftree->load_from_file("0" + std::to_string(tmpj) + ".sgf");
-					game = sgftree->follow_mainline_state(movenum - 1);
+					auto filename = "0" + std::to_string(tmpj) + ".sgf";
+					if (tmpj != 0)
+					{
+						int movenum = 999;
+						auto sgftree = std::make_unique<SGFTree>();
+						sgftree->load_from_file(filename);
+						game = sgftree->follow_mainline_state(movenum - 1);
+					}
+					myprintf("%s\n",filename);
 
 					game.set_to_move(who);
 					move = search->think(who);
 					vertex = game.move_to_text(move);
 					gtp_printf(id, "uct:%s", vertex.c_str());
 
-					game.set_to_move(who);
-					move = search->think_sh(who, 0, move);
-					vertex = game.move_to_text(move);
-					gtp_printf(id, "sh:%s", vertex.c_str());
+					for (int ti = 0; ti < 10;ti++)
+					{
+						game.set_to_move(who);
+						move = search->think_sh(who, 0, move);
+					}
+					//vertex = game.move_to_text(move);
+					//gtp_printf(id, "sh:%s", vertex.c_str());
 				}
 
 
