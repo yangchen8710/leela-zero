@@ -747,7 +747,7 @@ std::vector<int> UCTSearch::get_new_round_children(std::vector<int> child_in_rou
 
 int UCTSearch::think_sh(int color, passflag_t passflag,int test) {
 	
-	int coin = 20000;
+	int coin = 50000;
 	update_root();
 	Random rd = Random(time(NULL));
 	srand((unsigned)time(NULL));
@@ -822,7 +822,7 @@ int UCTSearch::think_sh(int color, passflag_t passflag,int test) {
 		child_in_round = get_new_round_children(child_in_round);
 		for (int tmpi = 0; tmpi < child_in_round.size(); tmpi++)
 		{
-			if (m_root->m_children[child_in_round[0]]->get_move() == test)
+			if (m_root->m_children[child_in_round[tmpi]]->get_move() == test)
 			{
 				round_count++;
 				myprintf("best move in round%d.\n", round_count);
