@@ -416,7 +416,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 						sgftree->load_from_file(filename);
 						game = sgftree->follow_mainline_state(movenum - 1);
 					}
-					myprintf("%s\n",filename);
+					myprintf("%d game\n", tmpj);
 
 					game.set_to_move(who);
 					move = search->think(who);
