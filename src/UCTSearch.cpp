@@ -821,6 +821,19 @@ int UCTSearch::think(int color, passflag_t passflag) {
     // play something legal and decent even in time trouble)
     m_root->prepare_root_node(color, m_nodes, m_rootstate);
 
+	for (int tmpj = 0; tmpj < m_root->m_children.size(); tmpj++)
+	{
+		std::string vertex = m_rootstate.move_to_text(m_root->m_children[tmpj].get_move());
+
+		myprintf("%s\t%f\t%f\t%d\t%d\n",
+			vertex.c_str(),
+			m_root->m_children[tmpj]->get_score(),
+			m_root->m_children[tmpj]->get_eval(color),
+			m_root->m_children[tmpj]->get_visits(),
+			m_root->m_children[tmpj]->random_playouts_win);
+		//rp_count[tmpj], rp_win[tmpj]);
+	}
+
     m_run = true;
     int cpus = cfg_num_threads;
     ThreadGroup tg(thread_pool);
