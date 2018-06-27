@@ -642,6 +642,7 @@ int UCTSearch::gen_random_move(GameState& state, Random rd)
 		}
 	}
 	nodelist.emplace_back(raw_netlist.policy_pass, FastBoard::PASS);
+	legal_sum += raw_netlist.policy_pass;
 
 	if (legal_sum > std::numeric_limits<float>::min()) {
 		// re-normalize after removing illegal moves.
@@ -692,8 +693,8 @@ int UCTSearch::random_playout(GameState& state, Random rd)
 		winrate = raw_netlist.winrate;
 	else
 		winrate = 1.0f - raw_netlist.winrate;
-	//myprintf("side = %d,winrate = %f \n",
-	//	side,winrate);
+	myprintf("side = %d,winrate = %f \n",
+		side,winrate);
 	//state.display_state();
 	if (winrate > 0.5)
 		return 1;
