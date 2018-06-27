@@ -622,7 +622,7 @@ void UCTWorker::operator()() {
 void UCTSearch::increment_playouts() {
     m_playouts++;
 }
-/*
+
 int UCTSearch::gen_random_move(GameState& state, Random rd)
 {
 	const auto raw_netlist = Network::get_scored_moves(
@@ -673,7 +673,7 @@ int UCTSearch::gen_random_move(GameState& state, Random rd)
 	}
 	return nodelist[nodelist.size()-1].second;
 }
-*/
+/*
 int UCTSearch::gen_random_move(GameState& state, Random rd)
 {
 	auto to_move = state.board.get_to_move();
@@ -695,7 +695,7 @@ int UCTSearch::gen_random_move(GameState& state, Random rd)
 
 	return legal_moves[move_idx];
 }
-
+*/
 int UCTSearch::random_playout(GameState& state, Random rd)
 {
 	int side = state.get_to_move();
@@ -819,12 +819,14 @@ int UCTSearch::think_sh(int color, passflag_t passflag,int test) {
 	{
 		int old_r = round_count;
 		int node_coin = round_coin / child_in_round.size();
-		/*
-		myprintf("child_in_round.size = %d, node_coin = %d, round_coin = %d,  \n",
-			child_in_round.size(),
-			node_coin,
-			round_coin);
-		*/
+		if (round_count == 1)
+		{
+			myprintf("child_in_round.size = %d, node_coin = %d, round_coin = %d,  \n",
+				child_in_round.size(),
+				node_coin,
+				round_coin);
+		}
+		
 		for (int tmpj = 0; tmpj < child_in_round.size(); tmpj++)
 		{
 			int child_idx = child_in_round[tmpj];
