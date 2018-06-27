@@ -625,24 +625,50 @@ void UCTSearch::increment_playouts() {
 
 int UCTSearch::gen_random_move(GameState& state, Random rd)
 {
+	const auto raw_netlist = Network::get_scored_moves(
+		&state, Network::Ensemble::RANDOM_SYMMETRY);
+
+	std::vector<Network::ScoreVertexPair> nodelist;
 	auto to_move = state.board.get_to_move();
-	std::vector<int> legal_moves;
+
+	auto legal_sum = 0.0f;
 	for (auto i = 0; i < BOARD_SQUARES; i++) {
 		const auto x = i % BOARD_SIZE;
 		const auto y = i / BOARD_SIZE;
 		const auto vertex = state.board.get_vertex(x, y);
 		if (state.is_move_legal(to_move, vertex)) {
-			legal_moves.emplace_back(vertex);
+			nodelist.emplace_back(raw_netlist.policy[i], vertex);
+			legal_sum += raw_netlist.policy[i];
 		}
 	}
-	if (legal_moves.size() == 0)
-		return -1;
+	nodelist.emplace_back(raw_netlist.policy_pass, FastBoard::PASS);
 
-	
+	if (legal_sum > std::numeric_limits<float>::min()) {
+		// re-normalize after removing illegal moves.
+		for (auto& node : nodelist) {
+			node.first /= legal_sum;
+		}
+	}
+	else {
+		// This can happen with new randomized nets.
+		auto uniform_prob = 1.0f / nodelist.size();
+		for (auto& node : nodelist) {
+			node.first = uniform_prob;
+		}
+	}
+
+	int max = 100000;
+	double prop_sum = 0.0;
 	//auto move_idx = rd.randuint64(legal_moves.size());
-	auto move_idx = rand() % legal_moves.size();
+	auto move_rd = 1.0 * (rand() % max) / max;
 
-	return legal_moves[move_idx];
+	for (int tmpj = 0; tmpj < nodelist.size(); tmpj++)
+	{
+		prop_sum += nodelist[tmpj].first;
+		if(move_rd <= prop_sum)
+			return nodelist[tmpj].second;
+	}
+	return nodelist[nodelist.size()-1].second;
 }
 
 int UCTSearch::random_playout(GameState& state, Random rd)
@@ -657,7 +683,7 @@ int UCTSearch::random_playout(GameState& state, Random rd)
 		auto to_move = state.board.get_to_move();
 		state.play_move(res_move_new);
 
-	} while (res_move_new != -1 && res_move_old !=-1);
+	} while (res_move_new != FastBoard::PASS && res_move_old != FastBoard::PASS);
 	const auto raw_netlist = Network::get_scored_moves(
 		&state, Network::Ensemble::RANDOM_SYMMETRY);
 
