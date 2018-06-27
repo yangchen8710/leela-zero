@@ -680,7 +680,7 @@ int UCTSearch::random_playout(GameState& state, Random rd)
 	float winrate;
 	int res_move_old,res_move_new = 1;
 	int gen_moves = 0;
-	Time start;
+	//Time start;
 	do
 	{
 		res_move_old = res_move_new;
@@ -698,10 +698,10 @@ int UCTSearch::random_playout(GameState& state, Random rd)
 		winrate = raw_netlist.winrate;
 	else
 		winrate = 1.0f - raw_netlist.winrate;
-	Time elapsed;
-	int elapsed_centis = Time::timediff_centis(start, elapsed);
-	myprintf("side = %d,winrate = %f,gen_moves=%d ,elapsed_centis=%d\n",
-		side,winrate, gen_moves, elapsed_centis);
+	//Time elapsed;
+	//int elapsed_centis = Time::timediff_centis(start, elapsed);
+	//myprintf("side = %d,winrate = %f,gen_moves=%d ,elapsed_centis=%d\n",
+	//	side,winrate, gen_moves, elapsed_centis);
 	//state.display_state();
 	if (winrate > 0.5)
 		return 1;
