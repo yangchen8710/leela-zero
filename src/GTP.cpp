@@ -426,7 +426,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 					for (int ti = 0; ti < 10;ti++)
 					{
 						game.set_to_move(who);
-						move = search->think_sh(who, 0, move);
+						search->think_sh(who, 0, move);
 					}
 					//vertex = game.move_to_text(move);
 					//gtp_printf(id, "sh:%s", vertex.c_str());
