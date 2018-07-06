@@ -1001,8 +1001,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 			int child_idx = child_in_round[tmpi];
 			if (playedBudget >= buget)
 				return 0;
-			auto temp = child_in_round[child_idx];
-			auto& nodex = node->m_children[temp];
+			auto& nodex = node->m_children[child_idx];
 			auto nodexx = nodex.get();
 			if ((*nodexx).shot_po_count == 0)
 			{
