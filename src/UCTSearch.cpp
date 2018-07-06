@@ -1007,11 +1007,11 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 			if ((*nodexx).shot_po_count == 0)
 			{
 				auto nextstate = std::make_unique<GameState>(currstate);
-				nextstate->play_move(node->m_children[child_in_round[child_idx]]->get_move());
+				nextstate->play_move(node->m_children[child_idx]->get_move());
 				int nu, np;
 				double nw;
 				nu = np = nw = 0;
-				shot(*nextstate, node->m_children[child_in_round[child_idx]].get(), rd, 1, nu, np, nw);
+				shot(*nextstate, node->m_children[child_idx].get(), rd, 1, nu, np, nw);
 				budgetUsed += nu;
 				playouts += np;
 				wins += nw;
