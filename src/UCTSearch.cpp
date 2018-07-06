@@ -968,7 +968,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 	}
 	
 	std::vector<int> child_in_round;
-	int nsize = node->m_children.size() > 16 ? 16 : node->m_children.size();
+	int nsize = node->m_children.size() > 17 ? 16 : node->m_children.size();
 	//myprintf("color %d\n", currstate.get_to_move());
 	for (int tmpj = 0; tmpj < nsize; tmpj++)
 	{
@@ -996,8 +996,9 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 	int playedBudget = 0;
 	if (budgetNode <= child_in_round.size())
 	{
-		for each (auto child_idx in child_in_round)
+		for (int tmpi = 0; tmpi < child_in_round.size(); tmpi++)
 		{
+			int child_idx = child_in_round[tmpi];
 			if (playedBudget >= buget)
 				return 0;
 			auto temp = child_in_round[child_idx];
