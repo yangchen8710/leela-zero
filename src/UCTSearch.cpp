@@ -1133,7 +1133,7 @@ int UCTSearch::think_shot(int color, passflag_t passflag) {
 	int playouts = 0;
 	double wins = 0;
 
-	int bestmove = shot(m_rootstate, m_root.get(), rd, 8000, budgetUsed, playouts, wins, true);
+	int bestmove = shot(m_rootstate, m_root.get(), rd, 80000, budgetUsed, playouts, wins, true);
 
 	m_last_rootstate = std::make_unique<GameState>(m_rootstate);
 	return bestmove;
