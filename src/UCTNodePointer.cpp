@@ -94,3 +94,14 @@ int UCTNodePointer::get_move() const {
     if (is_inflated()) return read_ptr()->get_move();
     return read_vertex();
 }
+
+int UCTNodePointer::get_shot_po() const {
+	if (is_inflated()) return read_ptr()->shot_po_count;
+	return read_vertex();
+}
+
+int UCTNodePointer::set_shot_po(int i) const {
+	read_ptr()->shot_po_count = i;
+	if (is_inflated()) return read_ptr()->shot_po_count;
+	return read_vertex();
+}

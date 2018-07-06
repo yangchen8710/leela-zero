@@ -442,6 +442,41 @@ bool GTP::execute(GameState & game, std::string xinput) {
 		}
 		return true;
 	}
+	else if (command.find("genshot") == 0) {
+		std::istringstream cmdstream(command);
+		std::string tmp;
+
+		cmdstream >> tmp;  // eat genmove
+		cmdstream >> tmp;
+
+		if (!cmdstream.fail()) {
+			int who;
+			if (tmp == "w" || tmp == "white") {
+				who = FastBoard::WHITE;
+			}
+			else if (tmp == "b" || tmp == "black") {
+				who = FastBoard::BLACK;
+			}
+			else {
+				gtp_fail_printf(id, "syntax error");
+				return 1;
+			}
+			// start thinking
+			{
+				int move;
+				std::string vertex;
+				game.set_to_move(who);
+				move = search->think_shot(who);
+				game.play_move(move);
+				vertex = game.move_to_text(move);
+				gtp_printf(id, "uct:%s", vertex.c_str());
+			}
+		}
+		else {
+			gtp_fail_printf(id, "syntax not understood");
+		}
+		return true;
+	}
 	else if (command.find("kgs-genmove_cleanup") == 0) {
         std::istringstream cmdstream(command);
         std::string tmp;

@@ -50,10 +50,7 @@ private:
     // (C-style bit fields and unions are not portable)
     mutable uint64_t m_data = 1;
 
-    UCTNode * read_ptr() const {
-        assert(is_inflated());
-        return reinterpret_cast<UCTNode*>(m_data);
-    }
+
 
     std::int16_t read_vertex() const {
         assert(!is_inflated());
@@ -76,7 +73,10 @@ public:
     UCTNodePointer(UCTNodePointer&& n);
     UCTNodePointer(std::int16_t vertex, float score);
     UCTNodePointer(const UCTNodePointer&) = delete;
-
+	UCTNode * read_ptr() const {
+		assert(is_inflated());
+		return reinterpret_cast<UCTNode*>(m_data);
+	}
     bool is_inflated() const {
         return (m_data & 1ULL) == 0;
     }
@@ -107,7 +107,9 @@ public:
     int get_visits() const;
     float get_score() const;
     bool active() const;
-    int get_move() const;
+	int get_move() const;
+	int get_shot_po() const;
+	int set_shot_po(int i) const;
     // this can only be called if it is an inflated pointer
     float get_eval(int tomove) const;
 };

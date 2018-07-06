@@ -189,6 +189,12 @@ void UCTNode::virtual_loss_undo() {
     m_virtual_loss -= VIRTUAL_LOSS_COUNT;
 }
 
+void UCTNode::update_shot(int po, int wins)
+{
+	shot_po_count += po;
+
+	shot_wins += wins;
+}
 void UCTNode::update(float eval) {
     m_visits++;
     accumulate_eval(eval);

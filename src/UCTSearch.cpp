@@ -622,7 +622,7 @@ void UCTWorker::operator()() {
 void UCTSearch::increment_playouts() {
     m_playouts++;
 }
-
+/*
 int UCTSearch::gen_random_move(GameState& state, Random rd)
 {
 	const auto raw_netlist = Network::get_scored_moves(
@@ -673,7 +673,7 @@ int UCTSearch::gen_random_move(GameState& state, Random rd)
 	}
 	return nodelist[nodelist.size()-1].second;
 }
-/*
+*/
 int UCTSearch::gen_random_move(GameState& state, Random rd)
 {
 	auto to_move = state.board.get_to_move();
@@ -695,7 +695,7 @@ int UCTSearch::gen_random_move(GameState& state, Random rd)
 
 	return legal_moves[move_idx];
 }
-*/
+
 int UCTSearch::random_playout(GameState& state, Random rd)
 {
 	int side = state.get_to_move();
@@ -730,18 +730,22 @@ int UCTSearch::random_playout(GameState& state, Random rd)
 	else
 		return -1;
 }
-std::vector<int> UCTSearch::get_new_round_children(std::vector<int> child_in_round)
-{
-	std::vector<int> new_children_in_round;
 
+std::vector<int> UCTSearch::sort_round_children(std::vector<int> child_in_round, UCTNode* node)
+{
 	std::vector<float> child_sh_score_in_round;
+
 	int n = child_in_round.size();
 	for (int tmpj = 0; tmpj < n; tmpj++)
 	{
 		int child_idx = child_in_round[tmpj];
-		int child_rp_count = m_root->m_children[child_idx]->random_playouts_count;
-		int child_rp_win = m_root->m_children[tmpj]->random_playouts_win;
-		float child_rp_winrate = 1.0f * child_rp_win / child_rp_count;
+		int child_rp_count = node->m_children[child_idx]->shot_po_count;
+		int child_rp_win = node->m_children[tmpj]->shot_wins;
+		float child_rp_winrate;
+		if (child_rp_win == 0)
+			child_rp_winrate = 0;
+		else
+			child_rp_winrate = 1.0f * child_rp_win / child_rp_count;
 		child_sh_score_in_round.emplace_back(child_rp_winrate);
 	}
 
@@ -757,8 +761,21 @@ std::vector<int> UCTSearch::get_new_round_children(std::vector<int> child_in_rou
 			}
 		}
 	}
+	return child_in_round;
 
-	n = n / 2;
+}
+
+
+std::vector<int> UCTSearch::get_new_round_children(std::vector<int> child_in_round,UCTNode* node)
+{
+	std::vector<int> new_children_in_round;
+	std::vector<float> child_sh_score_in_round;
+
+	child_in_round = sort_round_children(child_in_round, node);
+
+	int n = child_in_round.size();
+	n = ceil(1.0 * n / 2);
+
 	for (int tmpj = 0; tmpj < n; tmpj++)
 	{
 		new_children_in_round.emplace_back(child_in_round[tmpj]);
@@ -843,7 +860,7 @@ int UCTSearch::think_sh(int color, passflag_t passflag,int test) {
 			}
 		}
 
-		child_in_round = get_new_round_children(child_in_round);
+		child_in_round = get_new_round_children(child_in_round,m_root.get());
 		for (int tmpi = 0; tmpi < child_in_round.size(); tmpi++)
 		{
 			if (m_root->m_children[child_in_round[tmpi]]->get_move() == test)
@@ -872,6 +889,254 @@ int UCTSearch::think_sh(int color, passflag_t passflag,int test) {
 	}
 	return m_root->m_children[child_in_round[0]]->get_move();
 
+}
+
+std::vector<int>  UCTSearch::get_legal_moves(GameState& currstate)
+{
+	std::vector<int> legal_moves;
+	auto to_move = currstate.board.get_to_move();
+	for (auto i = 0; i < BOARD_SQUARES; i++) {
+		const auto x = i % BOARD_SIZE;
+		const auto y = i / BOARD_SIZE;
+		const auto vertex = currstate.board.get_vertex(x, y);
+		if (currstate.is_move_legal(to_move, vertex)) {
+			legal_moves.emplace_back(vertex);
+		}
+	}
+	return legal_moves;
+}
+int checkwin(GameState& state)
+{
+	const auto raw_netlist = Network::get_scored_moves(
+		&state, Network::Ensemble::RANDOM_SYMMETRY);
+
+	if (raw_netlist.winrate > 0.5)
+		return 1;
+	else
+		return -1;
+}
+int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,int& budgetUsed,int& playouts,double& wins,bool isroot)
+{
+	float eval;
+	//myprintf("isroot %d.\n", isroot);
+	//myprintf("buget %d, budgetUsed %d, playouts %d, wins %d, \n", buget, budgetUsed, playouts, wins);
+
+		
+	
+	if (node->m_children.size() == 1)//terminal
+	{
+		double win;
+		if (node->get_eval(currstate.get_to_move()) > 0.5)
+			win = 1;
+		else
+			win = 0;
+		node->update_shot(buget, win * buget);
+		playouts += buget;
+		wins += win * buget;
+		return win;
+	}
+
+	if (buget == 1)
+	{
+		const auto raw_netlist = Network::get_scored_moves(
+			&currstate, Network::Ensemble::RANDOM_SYMMETRY);
+		double result = raw_netlist.winrate;
+		node->update_shot(1, result);
+		wins += result;
+		budgetUsed++;
+		playouts++;
+		return result;
+		/*
+		double result = random_playout(currstate,rd);
+		if (result == 1)
+		{
+			node->update_shot(1, 1);
+			wins++;
+			
+		}else
+			node->update_shot(1, 0);
+		budgetUsed++;
+		playouts++;
+		return result;
+		*/
+	}
+
+	if (!node->has_children())
+	{
+		node->create_children(m_nodes, currstate, eval);//todo
+		node->inflate_all_children();
+	}
+	
+	std::vector<int> child_in_round;
+	int nsize = node->m_children.size() > 16 ? 16 : node->m_children.size();
+	//myprintf("color %d\n", currstate.get_to_move());
+	for (int tmpj = 0; tmpj < nsize; tmpj++)
+	{
+		//myprintf("%f\n",node->m_children[tmpj].get_score());
+		if (node->m_children[tmpj].get_move() != FastBoard::PASS)
+			child_in_round.emplace_back(tmpj);
+	}
+	//myprintf("\n");
+
+	if (child_in_round.size() == 1)
+	{
+		int nu, np;
+		double nw;
+		nu = np = nw = 0;
+		auto nextstate = std::make_unique<GameState>(currstate);
+		nextstate->play_move(node->m_children[child_in_round[0]]->get_move());
+		shot(*nextstate, (node->m_children[child_in_round[0]]).get(), rd, buget, nu, np, nw);
+		budgetUsed += nu;
+		playouts += np;
+		wins += nw;
+		//update
+		node->update_shot(playouts, wins);
+	}
+	int budgetNode = node->shot_po_count;
+	int playedBudget = 0;
+	if (budgetNode <= child_in_round.size())
+	{
+		for each (auto child_idx in child_in_round)
+		{
+			if (playedBudget >= buget)
+				return 0;
+			auto temp = child_in_round[child_idx];
+			auto& nodex = node->m_children[temp];
+			auto nodexx = nodex.get();
+			if ((*nodexx).shot_po_count == 0)
+			{
+				auto nextstate = std::make_unique<GameState>(currstate);
+				nextstate->play_move(node->m_children[child_in_round[child_idx]]->get_move());
+				int nu, np;
+				double nw;
+				nu = np = nw = 0;
+				shot(*nextstate, node->m_children[child_in_round[child_idx]].get(), rd, 1, nu, np, nw);
+				budgetUsed += nu;
+				playouts += np;
+				wins += nw;
+				//update
+				node->update_shot(np, nw);
+				playedBudget++;
+			}
+		}
+	}
+	
+	sort_round_children(child_in_round, node);
+
+	int childSum = child_in_round.size();
+
+	int round_sum = ceil(log(childSum) * M_LOG2E);
+
+	int po_sum_to_increase = 0;
+	int round_no = 0;
+	myprintf("buget %d,round_sum %d,child_in_round.size() %d\n", buget, round_sum, child_in_round.size());
+	while (child_in_round.size() > 1)
+	{
+		round_no++;
+		//if(isroot)
+			myprintf("round_no %d\n", round_no);
+		int node_budgets = (budgetNode + buget) / (child_in_round.size()*round_sum);
+		node_budgets = 1 > node_budgets ? 1 : node_budgets;
+		po_sum_to_increase += node_budgets;
+		myprintf("node_budgets %d,po_sum_to_increase %d\n", node_budgets, po_sum_to_increase);
+		for (int tmpi = 0; tmpi < child_in_round.size(); tmpi++)
+		{
+			//myprintf("tmpi %d,child_in_round[tmpi] %d\n", tmpi, child_in_round[tmpi]);
+			int po_times; 
+			//int d = (*(node->m_children[1])).get_score();
+			
+			if (node->m_children[child_in_round[tmpi]]->shot_po_count < po_sum_to_increase)
+			{
+				po_times = po_sum_to_increase - node->m_children[child_in_round[tmpi]]->shot_po_count;
+			}
+			else
+			{
+				continue;
+			}
+			//myprintf("node_budgets %d,po_sum_to_increase %d,po_times %d,node_po %d\n", node_budgets, po_sum_to_increase, po_times, node->m_children[child_in_round[tmpi]]->shot_po_count);
+			po_times = po_times < (buget-budgetUsed) ? po_times : (buget - budgetUsed);
+			//if root
+			if (isroot && child_in_round.size() == 2 && tmpi == 0)
+			{
+				po_times = buget - budgetUsed;
+				po_times = po_times / 2;
+
+			}
+			int nu, np;
+			double nw;
+			nu = np = nw = 0;
+			auto nextstate = std::make_unique<GameState>(currstate);
+			nextstate->play_move(node->m_children[child_in_round[tmpi]]->get_move());
+			if (po_times == 0)
+			{
+				int d;
+				d = node->m_children[child_in_round[tmpi]]->shot_po_count; 
+				//myprintf("break: po %d,buget %d, budgetUsed %d\n", d, buget,budgetUsed);
+				break;
+			}
+			if (budgetUsed >= buget)
+			{
+				break;
+			}
+				
+			shot(*nextstate, (node->m_children[child_in_round[tmpi]]).get(), rd,po_times,nu,np,nw);
+			//node->m_children[child_in_round[tmpi]]->update_shot(np,nw);
+			//myprintf("budgetUsed %d,playouts %d,wins %d\n", nu, np, nw);
+			budgetUsed += nu;
+			playouts += np;
+			wins += nw;
+			node->update_shot(np, nw);
+			//update
+			
+		}
+		//if (isroot)
+			myprintf("budgetUsed %d,playouts %d,wins %f\n", budgetUsed , playouts , wins);
+		child_in_round = get_new_round_children(child_in_round, node);
+		/*
+		if(budgetUsed>=buget)
+		{
+			break;
+		}
+		*/
+	}
+	myprintf("update:buget %d, budgetUsed %d, playouts %d, wins %f, \n", buget, budgetUsed, playouts, wins);
+	//
+	if (child_in_round.size()==1)
+		return node->m_children[child_in_round[0]].get_move();
+}
+
+int UCTSearch::think_shot(int color, passflag_t passflag) {
+	// Start counting time for us
+	srand((unsigned)time(NULL));
+	Random rd = Random(time(NULL));
+	
+	m_rootstate.start_clock(color);
+
+	// set up timing info
+	Time start;
+
+	update_root();
+	// set side to move
+	m_rootstate.board.set_to_move(color);
+
+	m_rootstate.get_timecontrol().set_boardsize(
+		m_rootstate.board.get_boardsize());
+	auto time_for_move = m_rootstate.get_timecontrol().max_time_for_move(color, m_rootstate.get_movenum());
+
+	m_root->prepare_root_node(color, m_nodes, m_rootstate);
+
+	// create a sorted list of legal moves (make sure we
+	// play something legal and decent even in time trouble)
+	//m_root->prepare_root_node(color, m_nodes, m_rootstate);
+
+	int budgetUsed = 0;
+	int playouts = 0;
+	double wins = 0;
+
+	int bestmove = shot(m_rootstate, m_root.get(), rd, 8000, budgetUsed, playouts, wins, true);
+
+	m_last_rootstate = std::make_unique<GameState>(m_rootstate);
+	return bestmove;
 }
 
 int UCTSearch::think(int color, passflag_t passflag) {

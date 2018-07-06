@@ -70,6 +70,7 @@ public:
     void virtual_loss(void);
     void virtual_loss_undo(void);
 	void update(float eval);
+	void update_shot(int po, int wins);
 	void add_random_playouts_count();
 	void add_random_playouts_win();
 
@@ -100,6 +101,9 @@ public:
 
 	int random_playouts_count{ 0 };
 	int random_playouts_win{ 0 };
+
+	int shot_po_count{ 0 };
+	double shot_wins{ 0 };
 
 private:
     enum Status : char {
