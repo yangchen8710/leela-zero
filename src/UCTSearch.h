@@ -108,7 +108,7 @@ public:
 	
 	SearchResult play_simulation(GameState& currstate, UCTNode* const node);
 	SearchResult play_simulation_sh(GameState& currstate, UCTNode* const node);
-	int shot(GameState& currstate, UCTNode* node, Random& rd, int buget, int& budgetUsed, int& playouts, double& wins, bool isroot = false);
+	int shot(GameState& currstate, UCTNode* node, Random& rd, int buget, int& budgetUsed, int& playouts, double& wins, bool isroot, int po_res_mode, int sim_res_mode);
 private:
     float get_min_psa_ratio() const;
     void dump_stats(FastState& state, UCTNode& parent);
