@@ -431,10 +431,6 @@ bool GTP::execute(GameState & game, std::string xinput) {
 					//vertex = game.move_to_text(move);
 					//gtp_printf(id, "sh:%s", vertex.c_str());
 				}
-
-
-
-
 			}
 		}
 		else {
@@ -465,11 +461,43 @@ bool GTP::execute(GameState & game, std::string xinput) {
 			{
 				int move;
 				std::string vertex;
+
+				for (int tmpj = 1; tmpj < 6; tmpj++)
+				{
+					auto filename = "0" + std::to_string(tmpj) + ".sgf";
+					if (tmpj != 0)
+					{
+						int movenum = 999;
+						auto sgftree = std::make_unique<SGFTree>();
+						sgftree->load_from_file(filename);
+						game = sgftree->follow_mainline_state(movenum - 1);
+					}
+					myprintf("%d.sgf game\n", tmpj);
+
+					game.set_to_move(who);
+					move = search->think(who);
+					vertex = game.move_to_text(move);
+					gtp_printf(id, "bestmoveis:%s", vertex.c_str());
+
+					for (int ti = 0; ti < 10; ti++)
+					{
+						game.set_to_move(who);
+						myprintf("start %d time shot\n", ti + 1);
+						search->think_shot(who, 0, move);
+						
+					}
+					//vertex = game.move_to_text(move);
+					//gtp_printf(id, "sh:%s", vertex.c_str());
+				}
+				/*
+				int move;
+				std::string vertex;
 				game.set_to_move(who);
 				move = search->think_shot(who);
 				game.play_move(move);
 				vertex = game.move_to_text(move);
 				gtp_printf(id, "uct:%s", vertex.c_str());
+				*/
 			}
 		}
 		else {

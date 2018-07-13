@@ -93,22 +93,25 @@ public:
 
     UCTSearch(GameState& g);
 	int think(int color, passflag_t passflag = NORMAL);
-	int think_shot(int color, passflag_t passflag = NORMAL);
+	int think_shot(int color, passflag_t passflag = NORMAL,int bestmove =0);
 	int think_sh(int color, passflag_t passflag = NORMAL,int test = 0);
 	int gen_random_move(GameState& state, Random rd);
+	int gen_policy_move(GameState& state, Random rd);
 	std::vector<int> sort_round_children(std::vector<int> child_in_round, UCTNode* node);
 	std::vector<int> get_new_round_children(std::vector<int> child_in_round,UCTNode* node);
-	int random_playout(GameState& state, Random rd);
+	int random_playout(GameState& state, Random rd,int mode = 0);
+	
     void set_playout_limit(int playouts);
     void set_visit_limit(int visits);
     void ponder();
     bool is_running() const;
     void increment_playouts();
 	std::vector<int> get_legal_moves(GameState& currstate);
+	int diffsum = 0;
 	
 	SearchResult play_simulation(GameState& currstate, UCTNode* const node);
 	SearchResult play_simulation_sh(GameState& currstate, UCTNode* const node);
-	int shot(GameState& currstate, UCTNode* node, Random& rd, int buget, int& budgetUsed, int& playouts, double& wins, bool isroot, int po_res_mode, int sim_res_mode);
+	int shot(GameState& currstate, UCTNode* node, Random& rd, int buget, int& budgetUsed, int& playouts, double& wins, bool isroot, int po_res_mode, int sim_res_mode,int bestmove);
 private:
     float get_min_psa_ratio() const;
     void dump_stats(FastState& state, UCTNode& parent);
