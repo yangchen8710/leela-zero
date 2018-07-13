@@ -949,17 +949,16 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 	if (buget == 1)
 	{
 		double result;
+		auto resrstate = std::make_unique<GameState>(currstate);
 		switch (po_res_mode)
 		{
 			case 0://use random playout
-				auto resrstate = std::make_unique<GameState>(currstate);
 				result = random_playout(*resrstate, rd,0);
 				//while loss, random_playout returns -1
 				if (result != 1)
 					result = 0;
 				break;
 			case 1://use policy playout
-				auto resrstate = std::make_unique<GameState>(currstate);
 				result = random_playout(*resrstate, rd,1);
 				//while loss, random_playout returns -1
 				if (result != 1)
