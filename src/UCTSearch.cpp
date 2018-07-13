@@ -699,6 +699,7 @@ int UCTSearch::gen_random_move(GameState& state, Random rd)
 
 int UCTSearch::random_playout(GameState& state, Random rd,int mode)
 {
+
 	int side = state.get_to_move();
 	float winrate;
 	int res_move_old,res_move_new = 1;
@@ -925,9 +926,7 @@ int checkwin(GameState& state)
 		return -1;
 }
 int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,int& budgetUsed,int& playouts,double& wins,bool isroot,int po_res_mode ,int sim_res_mode,int bestmove)
-{
-	
-	//myprintf("isroot %d.\n", isroot);
+{	//myprintf("isroot %d.\n", isroot);
 	myprintf("buget %d, budgetUsed %d, playouts %d, wins %d, \n", buget, budgetUsed, playouts, wins);
 
 		
@@ -953,13 +952,15 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		switch (po_res_mode)
 		{
 			case 0://use random playout
-				result = random_playout(currstate, rd,0);
+				auto resrstate = std::make_unique<GameState>(currstate);
+				result = random_playout(*resrstate, rd,0);
 				//while loss, random_playout returns -1
 				if (result != 1)
 					result = 0;
 				break;
 			case 1://use policy playout
-				result = random_playout(currstate, rd,1);
+				auto resrstate = std::make_unique<GameState>(currstate);
+				result = random_playout(*resrstate, rd,1);
 				//while loss, random_playout returns -1
 				if (result != 1)
 					result = 0;
@@ -1027,7 +1028,9 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 			if (budgetUsed >= buget)
 				return 0;
 			auto& nodex = node->m_children[child_idx];
+			myprintf("child_idx %d\n", child_idx);
 			auto nodexx = nodex.get();
+			myprintf("(*nodexx).get_move %d\n", (*nodexx).get_move());
 			if ((*nodexx).shot_po_count == 0)
 			{
 				auto nextstate = std::make_unique<GameState>(currstate);
