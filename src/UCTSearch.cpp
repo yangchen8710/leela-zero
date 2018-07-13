@@ -927,7 +927,7 @@ int checkwin(GameState& state)
 }
 int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,int& budgetUsed,int& playouts,double& wins,bool isroot,int po_res_mode ,int sim_res_mode,int bestmove)
 {	//myprintf("isroot %d.\n", isroot);
-	myprintf("buget %d, budgetUsed %d, playouts %d, wins %d, \n", buget, budgetUsed, playouts, wins);
+	//myprintf("buget %d, budgetUsed %d, playouts %d, wins %d, \n", buget, budgetUsed, playouts, wins);
 
 		
 	//thesis algorithm:board is terminal
@@ -976,6 +976,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 				
 				break;
 		}
+		myprintf("win %f.\n", result);
 		node->update_shot(1, result);
 		wins += result;
 		budgetUsed++;
@@ -1007,11 +1008,11 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		{
 			child_in_round.emplace_back(tmpj);
 			added++;
-			myprintf("(*nodexx).get_move %d\n", node->m_children[tmpj].get_move());
+			//myprintf("(*nodexx).get_move %d\n", node->m_children[tmpj].get_move());
 		}
 			
 	}
-	myprintf("child_in_round.size() %d,node->m_children %d\n", child_in_round.size(), node->m_children.size());
+	//myprintf("child_in_round.size() %d,node->m_children %d\n", child_in_round.size(), node->m_children.size());
 	//myprintf("\n");
 	//thesis algorithm:if|S|==1
 	if (child_in_round.size() == 1)
@@ -1042,9 +1043,9 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 			if (budgetUsed >= buget)
 				return 0;
 			auto& nodex = node->m_children[child_idx];
-			myprintf("child_idx %d,child_in_round.size() %d,node->m_children %d\n", child_idx, child_in_round.size(), node->m_children.size());
+			//myprintf("child_idx %d,child_in_round.size() %d,node->m_children %d\n", child_idx, child_in_round.size(), node->m_children.size());
 			auto nodexx = nodex.get();
-			myprintf("(*nodexx).get_move %d\n", (*nodexx).get_move());
+			//myprintf("(*nodexx).get_move %d\n", (*nodexx).get_move());
 			if ((*nodexx).shot_po_count == 0)
 			{
 				auto nextstate = std::make_unique<GameState>(currstate);
@@ -1120,7 +1121,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 			//myprintf("tmpi %d,child_in_round[tmpi] %d\n", tmpi, child_in_round[tmpi]);
 			int po_times; 
 			//int d = (*(node->m_children[1])).get_score();
-			
+			node->inflate_all_children();
 			if (node->m_children[child_in_round[tmpi]]->shot_po_count < po_sum_to_increase)
 			{
 				po_times = po_sum_to_increase - node->m_children[child_in_round[tmpi]]->shot_po_count;
@@ -1173,6 +1174,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		//else if (diff != 0)
 		//	myprintf("budgetUsed %d,playouts %d,wins %f\n", budgetUsed, playouts, wins);
 		int successflag = 0;
+		node->inflate_all_children();
 		for (int tmpi = 0; tmpi < child_in_round.size(); tmpi++)
 		{
 			if (m_root->m_children[child_in_round[tmpi]]->get_move() == bestmove)
