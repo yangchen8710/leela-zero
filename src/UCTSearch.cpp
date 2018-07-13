@@ -949,20 +949,25 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 	if (buget == 1)
 	{
 		double result;
+		int res_int;
 		auto resrstate = std::make_unique<GameState>(currstate);
 		switch (po_res_mode)
 		{
 			case 0://use random playout
-				result = random_playout(*resrstate, rd,0);
+				res_int = random_playout(*resrstate, rd,0);
 				//while loss, random_playout returns -1
-				if (result != 1)
-					result = 0;
+				if (res_int == 1)
+					result = 1.0;
+				else
+					result = 0.0;
 				break;
 			case 1://use policy playout
-				result = random_playout(*resrstate, rd,1);
+				res_int = random_playout(*resrstate, rd,1);
 				//while loss, random_playout returns -1
-				if (result != 1)
-					result = 0;
+				if (res_int == 1)
+					result = 1.0;
+				else
+					result = 0.0;
 				break;
 			case 2://use value net instead of random playout
 				const auto raw_netlist = Network::get_scored_moves(
@@ -1027,7 +1032,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 			if (budgetUsed >= buget)
 				return 0;
 			auto& nodex = node->m_children[child_idx];
-			myprintf("child_idx %d\n", child_idx);
+			myprintf("child_idx %d,node->m_children.size() %d,node->m_children %d\n", child_idx, node->m_children.size(), node->m_children.size());
 			auto nodexx = nodex.get();
 			myprintf("(*nodexx).get_move %d\n", (*nodexx).get_move());
 			if ((*nodexx).shot_po_count == 0)
