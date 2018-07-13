@@ -997,7 +997,8 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 	//int nsize = node->m_children.size() > 17 ? 365 : node->m_children.size();
 	int nsize = node->m_children.size()-1;
 	//myprintf("color %d\n", currstate.get_to_move());
-	for (int tmpj = 0; tmpj < nsize; )
+	int added = 0;
+	for (int tmpj = 0; added < nsize; tmpj++)
 	{
 		//myprintf("%f\n",node->m_children[tmpj].get_score());
 		if (tmpj >= node->m_children.size())
@@ -1005,7 +1006,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		if (node->m_children[tmpj].get_move() != FastBoard::PASS)
 		{
 			child_in_round.emplace_back(tmpj);
-			tmpj++;
+			added++;
 			myprintf("(*nodexx).get_move %d\n", node->m_children[tmpj].get_move());
 		}
 			
