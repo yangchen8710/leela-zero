@@ -976,7 +976,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 				
 				break;
 		}
-		myprintf("win %f.\n", result);
+		//myprintf("win %f.\n", result);
 		node->update_shot(1, result);
 		wins += result;
 		budgetUsed++;
@@ -1172,7 +1172,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		//	myprintf("budgetUsed %d,playouts %d,wins %f\n", budgetUsed, playouts, wins);
 		//}
 		//else if (diff != 0)
-		//	myprintf("budgetUsed %d,playouts %d,wins %f\n", budgetUsed, playouts, wins);
+		//myprintf("budgetUsed %d,playouts %d,wins %f\n", budgetUsed, playouts, wins);
 		int successflag = 0;
 		node->inflate_all_children();
 		for (int tmpi = 0; tmpi < child_in_round.size(); tmpi++)
@@ -1196,7 +1196,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		}
 		
 	}
-	//myprintf("update:buget %d, budgetUsed %d, playouts %d, wins %f, \n", buget, budgetUsed, playouts, wins);
+	myprintf("update:buget %d, budgetUsed %d, playouts %d, wins %f, \n", buget, budgetUsed, playouts, wins);
 	//thesis algorithm:return first move of S
 	if (child_in_round.size()==1)
 		return node->m_children[child_in_round[0]].get_move();
