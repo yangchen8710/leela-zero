@@ -1003,7 +1003,6 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		if (node->m_children[tmpj].get_move() != FastBoard::PASS)
 			child_in_round.emplace_back(tmpj);
 	}
-	myprintf("node->m_children.size() %d,node->m_children %d\n", node->m_children.size(), node->m_children.size());
 	//myprintf("\n");
 	//thesis algorithm:if|S|==1
 	if (child_in_round.size() == 1)
