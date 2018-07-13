@@ -1003,7 +1003,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		if (node->m_children[tmpj].get_move() != FastBoard::PASS)
 			child_in_round.emplace_back(tmpj);
 	}
-	myprintf("node->m_children.size() %d,node->m_children %d\n", node->m_children.size(), node->m_children.size());
+	myprintf("child_in_round.size() %d,node->m_children %d\n", child_in_round.size(), node->m_children.size());
 	//myprintf("\n");
 	//thesis algorithm:if|S|==1
 	if (child_in_round.size() == 1)
@@ -1033,7 +1033,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 			if (budgetUsed >= buget)
 				return 0;
 			auto& nodex = node->m_children[child_idx];
-			myprintf("child_idx %d,node->m_children.size() %d,node->m_children %d\n", child_idx, node->m_children.size(), node->m_children.size());
+			myprintf("child_idx %d,child_in_round.size() %d,node->m_children %d\n", child_idx, child_in_round.size(), node->m_children.size());
 			auto nodexx = nodex.get();
 			myprintf("(*nodexx).get_move %d\n", (*nodexx).get_move());
 			if ((*nodexx).shot_po_count == 0)
