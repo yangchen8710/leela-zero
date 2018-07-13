@@ -1179,7 +1179,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		{
 			if (m_root->m_children[child_in_round[tmpi]]->get_move() == bestmove)
 			{
-				myprintf("best move in round%d.\n", round_no);
+				myprintf("best move in round%d,buget %d, budgetUsed %d, playouts %d, wins %f\n", round_no, buget, budgetUsed, playouts, wins);
 				successflag = 1;
 				break;
 			}
@@ -1189,7 +1189,6 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 
 		child_in_round = get_new_round_children(child_in_round, node);
 
-		
 		if(budgetUsed>=buget)
 		{
 			break;
