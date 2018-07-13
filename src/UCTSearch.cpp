@@ -1032,11 +1032,11 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 			int child_idx = child_in_round[tmpi];
 			if (budgetUsed >= buget)
 				return 0;
-			auto& nodex = node->m_children[child_idx];
+			//auto& nodex = node->m_children[child_idx];
 			myprintf("child_idx %d,child_in_round.size() %d,node->m_children %d\n", child_idx, child_in_round.size(), node->m_children.size());
-			auto nodexx = nodex.get();
-			myprintf("(*nodexx).get_move %d\n", (*nodexx).get_move());
-			if ((*nodexx).shot_po_count == 0)
+			//auto nodexx = nodex.get();
+			//myprintf("(*nodexx).get_move %d\n", (*nodexx).get_move());
+			if (node->m_children[child_idx]->shot_po_count == 0)
 			{
 				auto nextstate = std::make_unique<GameState>(currstate);
 				nextstate->play_move(node->m_children[child_idx]->get_move());
