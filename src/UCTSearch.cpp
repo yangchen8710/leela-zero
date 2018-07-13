@@ -1037,6 +1037,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 	{
 		for (int tmpi = 0; tmpi < child_in_round.size(); tmpi++)
 		{
+			node->inflate_all_children();
 			int child_idx = child_in_round[tmpi];
 			if (budgetUsed >= buget)
 				return 0;
