@@ -132,9 +132,9 @@ void UCTSearch::update_root() {
     auto start_nodes = m_root->count_nodes();
 #endif
 
-    if (!advance_to_new_rootstate() || !m_root) {
+    //if (!advance_to_new_rootstate() || !m_root) {
         m_root = std::make_unique<UCTNode>(FastBoard::PASS, 0.0f);
-    }
+    //}
     // Clear last_rootstate to prevent accidental use.
     m_last_rootstate.reset(nullptr);
 
@@ -928,7 +928,6 @@ int checkwin(GameState& state)
 int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,int& budgetUsed,int& playouts,double& wins,bool isroot,int po_res_mode ,int sim_res_mode,int bestmove)
 {	//myprintf("isroot %d.\n", isroot);
 	//myprintf("buget %d, budgetUsed %d, playouts %d, wins %d, \n", buget, budgetUsed, playouts, wins);
-
 		
 	//thesis algorithm:board is terminal
 	if (node->m_children.size() == 1)//terminal
@@ -1235,7 +1234,7 @@ int UCTSearch::think_shot(int color, passflag_t passflag,int bestmove) {
 	int poresmode = 0;
 	int resmove = shot(m_rootstate, m_root.get(), rd, 50000, budgetUsed, playouts, wins, true, poresmode,0,bestmove);
 
-	m_last_rootstate = std::make_unique<GameState>(m_rootstate);
+	//m_last_rootstate = std::make_unique<GameState>(m_rootstate);
 	return resmove;
 }
 
