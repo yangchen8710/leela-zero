@@ -1175,17 +1175,21 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		//myprintf("budgetUsed %d,playouts %d,wins %f\n", budgetUsed, playouts, wins);
 		int successflag = 0;
 		node->inflate_all_children();
-		for (int tmpi = 0; tmpi < child_in_round.size(); tmpi++)
+		if (isroot)
 		{
-			if (m_root->m_children[child_in_round[tmpi]]->get_move() == bestmove)
+			for (int tmpi = 0; tmpi < child_in_round.size(); tmpi++)
 			{
-				myprintf("best move in round%d,buget %d, budgetUsed %d, playouts %d, wins %f\n", round_no, buget, budgetUsed, playouts, wins);
-				successflag = 1;
-				break;
+				if (m_root->m_children[child_in_round[tmpi]]->get_move() == bestmove)
+				{
+					myprintf("best move in round%d,buget %d, budgetUsed %d, playouts %d, wins %f\n", round_no, buget, budgetUsed, playouts, wins);
+					successflag = 1;
+					break;
+				}
 			}
+			if (!successflag)
+				return 0;
 		}
-		if (!successflag)
-			return 0;
+
 
 		child_in_round = get_new_round_children(child_in_round, node);
 
