@@ -1199,7 +1199,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		}
 		
 	}
-	myprintf("update:buget %d, budgetUsed %d, playouts %d, wins %f, \n", buget, budgetUsed, playouts, wins);
+	//myprintf("update:buget %d, budgetUsed %d, playouts %d, wins %f, \n", buget, budgetUsed, playouts, wins);
 	//thesis algorithm:return first move of S
 	if (child_in_round.size()==1)
 		return node->m_children[child_in_round[0]].get_move();
@@ -1232,8 +1232,8 @@ int UCTSearch::think_shot(int color, passflag_t passflag,int bestmove) {
 	int budgetUsed = 0;
 	int playouts = 0;
 	double wins = 0;
-
-	int resmove = shot(m_rootstate, m_root.get(), rd, 50000, budgetUsed, playouts, wins, true,0,0,bestmove);
+	int poresmode = 0;
+	int resmove = shot(m_rootstate, m_root.get(), rd, 50000, budgetUsed, playouts, wins, true, poresmode,0,bestmove);
 
 	m_last_rootstate = std::make_unique<GameState>(m_rootstate);
 	return resmove;
