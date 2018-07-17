@@ -1195,7 +1195,10 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 				budgetUsed += nu;
 				playouts += np;
 				wins += nw;
-				node->update_shot(np, nw);
+				if(isroot)
+					node->update_shot(np, nw);
+				else
+					node->update_shot(np, 1.0*np - nw);
 				//update
 			}
 				if (budgetUsed >= buget)
