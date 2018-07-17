@@ -996,7 +996,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		}
 		//myprintf("win %f.\n", result);
 		node->update_shot(1, result);
-		wins += result;
+		wins += 1-result;
 		budgetUsed++;
 		playouts++;
 		return result;
