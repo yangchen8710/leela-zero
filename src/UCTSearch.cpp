@@ -1024,7 +1024,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 	{
 		nsize = node->m_children.size() - 1;
 	}
-	myprintf("pwmode=%d,nsize %d\n", pw,nsize);
+	//myprintf("pwmode=%d,nsize %d\n", pw,nsize);
 	int added = 0;
 	for (int tmpj = 0; added < nsize; tmpj++)
 	{
