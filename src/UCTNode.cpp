@@ -189,7 +189,7 @@ void UCTNode::virtual_loss_undo() {
     m_virtual_loss -= VIRTUAL_LOSS_COUNT;
 }
 
-void UCTNode::update_shot(int po, int wins)
+void UCTNode::update_shot(int po, double wins)
 {
 	shot_po_count += po;
 

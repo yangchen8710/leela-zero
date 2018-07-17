@@ -70,7 +70,7 @@ public:
     void virtual_loss(void);
     void virtual_loss_undo(void);
 	void update(float eval);
-	void update_shot(int po, int wins);
+	void update_shot(int po, double wins);
 	void add_random_playouts_count();
 	void add_random_playouts_win();
 
