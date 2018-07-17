@@ -499,7 +499,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 				int move;
 				std::string vertex;
 
-				for (int tmpj = 0; tmpj < 5; tmpj++)
+				for (int tmpj = 1; tmpj < 6; tmpj++)
 				{
 					auto filename = "0" + std::to_string(tmpj) + ".sgf";
 					if (tmpj != 0)
@@ -520,7 +520,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 					{
 						game.set_to_move(who);
 						myprintf("start %d time shot\n", ti + 1);
-						search->think_shot(who, 0, move,50000,2,1);
+						search->think_shot(who, 0, move,50000,2,0);
 						
 					}
 					//vertex = game.move_to_text(move);

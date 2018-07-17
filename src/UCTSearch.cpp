@@ -1207,20 +1207,6 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		
 		int successflag = 0;
 		node->inflate_all_children();
-		if (isroot && bestmove > -1)
-		{
-			for (int tmpi = 0; tmpi < child_in_round.size(); tmpi++)
-			{
-				std::string vertex;
-				vertex = m_rootstate.move_to_text(m_root->m_children[child_in_round[tmpi]]->get_move());
-				myprintf("move:%s,wins %f,po %d,rate %f\n",
-					vertex.c_str(),
-					m_root->m_children[child_in_round[tmpi]]->shot_wins,
-					m_root->m_children[child_in_round[tmpi]]->shot_po_count,
-					1.0*m_root->m_children[child_in_round[tmpi]]->shot_wins/ m_root->m_children[child_in_round[tmpi]]->shot_po_count);
-			}
-			myprintf("\n\n\n\n\n\n");
-		}
 
 		{
 			int tpn = child_in_round.size();
@@ -1239,7 +1225,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 				}
 			}
 		}
-
+		/*
 		if (isroot && bestmove > -1)
 		{
 			for (int tmpi = 0; tmpi < child_in_round.size(); tmpi++)
@@ -1254,7 +1240,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 			}
 			myprintf("\n\n\n\n\n\n");
 		}
-
+		*/
 		child_in_round = get_new_round_children(child_in_round, node);
 
 		if (isroot && bestmove>-1)
