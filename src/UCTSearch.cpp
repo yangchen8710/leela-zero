@@ -763,7 +763,7 @@ std::vector<int> UCTSearch::sort_round_children(std::vector<int> child_in_round,
 		child_sh_score_in_round.emplace_back(child_rp_winrate);
 	}
 
-	for (int i = 0; i < n - 1; i++) {
+	for (int i = 0; i < n ; i++) {
 		for (int j = 0; j < n - i - 1; j++) {
 			if (child_sh_score_in_round[j] < child_sh_score_in_round[j + 1]) {
 				float tempf = child_sh_score_in_round[j];
