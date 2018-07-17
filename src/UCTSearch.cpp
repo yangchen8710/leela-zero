@@ -958,7 +958,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		{
 			case 0://use random playout
 				res_int = random_playout(*resrstate, rd,0);
-				myprintf("isroot %d.\n", res_int);
+				//myprintf("isroot %d.\n", res_int);
 				//while loss, random_playout returns -1
 				if (res_int == 1)
 					result = 1.0;
