@@ -1223,32 +1223,18 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		}
 
 		{
-			std::vector<float> child_sh_score_in_round;
-			child_sh_score_in_round.clear();
+			int tpn = child_in_round.size();
 
-			int n = child_in_round.size();
-			for (int tmpj = 0; tmpj < n; tmpj++)
-			{
-				int child_idx = child_in_round[tmpj];
-				double child_rp_count = 1.0* node->m_children[child_idx]->shot_po_count;
-				double child_rp_win = node->m_children[tmpj]->shot_wins;
-				double child_rp_winrate;
-				if (child_rp_win == 0)
-					child_rp_winrate = 0;
-				else
-					child_rp_winrate = 1.0 * child_rp_win / child_rp_count;
-				child_sh_score_in_round.emplace_back(child_rp_winrate);
-			}
-
-			for (int i = 0; i < n - 1; i++) {
-				for (int j = 0; j < n - i - 1; j++) {
-					if (child_sh_score_in_round[j] < child_sh_score_in_round[j + 1]) {
-						float tempf = child_sh_score_in_round[j];
-						int tempi = child_in_round[j];
-						child_sh_score_in_round[j] = child_sh_score_in_round[j + 1];
-						child_in_round[j] = child_in_round[j + 1];
-						child_sh_score_in_round[j + 1] = tempf;
-						child_in_round[j + 1] = tempi;
+			for (int tmpi = 0; tmpi < tpn - 1; tmpi++) {
+				for (int tmpj = 0; tmpj < tpn - tmpi - 1; tmpj++) {
+					double child_rp_count = 1.0* node->m_children[child_in_round[tmpj]]->shot_po_count;
+					double child_rp_win = node->m_children[child_in_round[tmpj]]->shot_wins;
+					double child_rp_counto = 1.0* node->m_children[child_in_round[tmpj+1]]->shot_po_count;
+					double child_rp_wino = node->m_children[child_in_round[tmpj+1]]->shot_wins;
+					if (child_rp_win/ child_rp_count < child_rp_wino / child_rp_counto) {
+						int tempi = child_in_round[tmpj];
+						child_in_round[tmpj] = child_in_round[tmpj + 1];
+						child_in_round[tmpj + 1] = tempi;
 					}
 				}
 			}
