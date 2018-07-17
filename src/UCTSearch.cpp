@@ -1213,12 +1213,12 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		{
 			std::string vertex;
 			vertex = m_rootstate.move_to_text(m_root->m_children[child_in_round[tmpi]]->get_move());
-			myprintf("move:%s,wins %d,po %d\n",
+			myprintf("move:%s,wins %f,po %d\n",
 				vertex.c_str(), 
 				m_root->m_children[child_in_round[tmpi]]->shot_wins,
 				m_root->m_children[child_in_round[tmpi]]->shot_po_count);
 		}
-
+		myprintf("\n\n\n\n\n\n" );
 		child_in_round = get_new_round_children(child_in_round, node);
 
 		if (isroot && bestmove>-1)
