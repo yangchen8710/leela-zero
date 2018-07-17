@@ -1172,6 +1172,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		//}
 		//else if (diff != 0)
 		//myprintf("budgetUsed %d,playouts %d,wins %f\n", budgetUsed, playouts, wins);
+		/*
 		int successflag = 0;
 		node->inflate_all_children();
 		if (isroot)
@@ -1188,7 +1189,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 			if (!successflag)
 				return 0;
 		}
-
+		*/
 
 		child_in_round = get_new_round_children(child_in_round, node);
 
@@ -1205,6 +1206,14 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 }
 
 int UCTSearch::think_shot(int color, passflag_t passflag,int bestmove) {
+
+	const auto raw_netlist = Network::get_scored_moves(
+		&m_rootstate, Network::Ensemble::RANDOM_SYMMETRY);
+	if (raw_netlist.winrate > 0.95)
+		return -1;
+	if (raw_netlist.winrate < 0.05)
+		return -2;
+
 	// Start counting time for us
 	srand((unsigned)time(NULL));
 	Random rd = Random(time(NULL));
@@ -1232,7 +1241,7 @@ int UCTSearch::think_shot(int color, passflag_t passflag,int bestmove) {
 	int playouts = 0;
 	double wins = 0;
 	int poresmode = 0;
-	int resmove = shot(m_rootstate, m_root.get(), rd, 50000, budgetUsed, playouts, wins, true, poresmode,0,bestmove);
+	int resmove = shot(m_rootstate, m_root.get(), rd, 5000, budgetUsed, playouts, wins, true, poresmode,0,bestmove);
 
 	//m_last_rootstate = std::make_unique<GameState>(m_rootstate);
 	return resmove;

@@ -438,6 +438,34 @@ bool GTP::execute(GameState & game, std::string xinput) {
 		}
 		return true;
 	}
+	else if (command.find("gengame") == 0)
+	{
+		auto who1 = FastBoard::WHITE;
+		auto who2 = FastBoard::BLACK;
+		int move;
+		std::string vertex;
+		while (1)
+		{
+			game.set_to_move(who1);
+			move = search->think_shot(who1, 0, 0);
+			if (move == -1 || move == -2)
+				break;
+			game.play_move(move);
+			vertex = game.move_to_text(move);
+			gtp_printf(id, "0:%s", vertex.c_str());
+			
+			game.set_to_move(who2);
+			vertex = game.move_to_text(move);
+			move = search->think_shot(who2, 2, 0);
+			if (move == -1 || move == -2)
+				break;
+			gtp_printf(id, "1:%s", vertex.c_str());
+			game.play_move(move);
+		}
+
+
+
+	}
 	else if (command.find("genshot") == 0) {
 		std::istringstream cmdstream(command);
 		std::string tmp;
