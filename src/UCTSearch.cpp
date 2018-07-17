@@ -1209,12 +1209,12 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		node->inflate_all_children();
 		
 		
-		for each (auto var in child_in_round)
+		for (int tmpi = 0; tmpi < child_in_round.size(); tmpi++)
 		{
 			myprintf("move:%s,wins %d,po %d\n",
-				m_rootstate.move_to_text(m_root->m_children[var]->get_move()),
-				m_root->m_children[var]->shot_wins,
-				m_root->m_children[var]->shot_po_count);
+				m_rootstate.move_to_text(m_root->m_children[child_in_round[tmpi]]->get_move()),
+				m_root->m_children[child_in_round[tmpi]]->shot_wins,
+				m_root->m_children[child_in_round[tmpi]]->shot_po_count);
 		}
 
 		child_in_round = get_new_round_children(child_in_round, node);
