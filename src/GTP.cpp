@@ -444,23 +444,32 @@ bool GTP::execute(GameState & game, std::string xinput) {
 		auto who2 = FastBoard::WHITE;
 		int move;
 		std::string vertex;
+		int count = 0;
 		while (1)
 		{
 			game.set_to_move(who1);
 			move = search->think_shot(who1, 0, 0);
 			if (move == -1 || move == -2)
+			{
+				game.display_state();
 				break;
+			}
+				
 			game.play_move(move);
 			vertex = game.move_to_text(move);
 			gtp_printf(id, "0:%s", vertex.c_str());
-			return true;
 			game.set_to_move(who2);
 			vertex = game.move_to_text(move);
 			move = search->think_shot(who2, 2, 0);
 			if (move == -1 || move == -2)
+			{
+				game.display_state();
 				break;
+			}
 			gtp_printf(id, "1:%s", vertex.c_str());
+			count += 2;
 			game.play_move(move);
+			game.display_state();
 		}
 
 
