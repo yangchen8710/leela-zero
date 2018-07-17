@@ -697,12 +697,12 @@ int UCTSearch::gen_random_move(GameState& state, Random rd)
 	return legal_moves[move_idx];
 }
 
-int UCTSearch::random_playout(GameState& state, Random rd,int mode)
+int UCTSearch::random_playout(GameState& state, Random rd, int mode)
 {
 
 	int side = state.get_to_move();
 	float winrate;
-	int res_move_old,res_move_new = 1;
+	int res_move_old, res_move_new = 1;
 	int gen_moves = 0;
 	//Time start;
 	do
@@ -720,6 +720,10 @@ int UCTSearch::random_playout(GameState& state, Random rd,int mode)
 		auto to_move = state.board.get_to_move();
 		state.play_move(res_move_new);
 		gen_moves++;
+		const auto raw_netlist = Network::get_scored_moves(
+			&state, Network::Ensemble::RANDOM_SYMMETRY);
+		if (raw_netlist.winrate > 0.95 || raw_netlist.winrate < 0.05)
+			break;
 
 	} while (res_move_new != FastBoard::PASS && res_move_old != FastBoard::PASS);
 	const auto raw_netlist = Network::get_scored_moves(
@@ -954,7 +958,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		{
 			case 0://use random playout
 				res_int = random_playout(*resrstate, rd,0);
-				//myprintf("isroot %d.\n", res_int);
+				myprintf("isroot %d.\n", res_int);
 				//while loss, random_playout returns -1
 				if (res_int == 1)
 					result = 1.0;
