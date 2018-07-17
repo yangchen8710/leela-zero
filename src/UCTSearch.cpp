@@ -785,7 +785,7 @@ std::vector<int> UCTSearch::get_new_round_children(std::vector<int> child_in_rou
 	std::vector<int> new_children_in_round;
 	std::vector<float> child_sh_score_in_round;
 
-	child_in_round = sort_round_children(child_in_round, node);
+	//child_in_round = sort_round_children(child_in_round, node);
 
 	int n = child_in_round.size();
 	n = ceil(1.0 * n / 2);
@@ -1236,7 +1236,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 				if (child_rp_win == 0)
 					child_rp_winrate = 0;
 				else
-					child_rp_winrate = 1.0f * child_rp_win / child_rp_count;
+					child_rp_winrate = 1.0 * child_rp_win / child_rp_count;
 				child_sh_score_in_round.emplace_back(child_rp_winrate);
 			}
 
