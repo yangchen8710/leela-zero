@@ -957,7 +957,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 			win = 0;
 		node->update_shot(buget, win * buget);
 		playouts += buget;
-		wins += win * buget;
+		wins += 1.0* playouts -win * buget;
 		return win;
 	}
 	if (buget == 0)
