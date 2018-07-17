@@ -1246,7 +1246,7 @@ int UCTSearch::think_shot(int color, passflag_t passflag,int bestmove) {
 	int playouts = 0;
 	double wins = 0;
 	int poresmode = 0;
-	int resmove = shot(m_rootstate, m_root.get(), rd, 50000, budgetUsed, playouts, wins, true, poresmode,0,bestmove);
+	int resmove = shot(m_rootstate, m_root.get(), rd, 5000, budgetUsed, playouts, wins, true, poresmode,0,bestmove);
 
 	//m_last_rootstate = std::make_unique<GameState>(m_rootstate);
 	return resmove;
