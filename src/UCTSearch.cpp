@@ -1185,7 +1185,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 				//node->m_children[child_in_round[tmpi]]->update_shot(np,nw);
 				//if(po_times!= nu)
 				//	myprintf("po_times %d,budgetUsed %d,playouts %d,after_po %d\n", po_times, nu, np, node->m_children[child_in_round[tmpi]]->shot_po_count);
-				if (1)
+				if (0)
 				{
 					std::string vertex;
 					vertex = m_rootstate.move_to_text(m_root->m_children[child_in_round[tmpi]]->get_move());
