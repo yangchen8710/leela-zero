@@ -507,14 +507,17 @@ bool GTP::execute(GameState & game, std::string xinput) {
 
 		cmdstream >> tmp;  // eat genmove
 		cmdstream >> tmp;
-
+		int modex;
 		if (!cmdstream.fail()) {
 			int who;
-			if (tmp == "w" || tmp == "white") {
-				who = FastBoard::WHITE;
+			if (tmp == "0" || tmp == "white") {
+				modex = 0;
 			}
-			else if (tmp == "b" || tmp == "black") {
-				who = FastBoard::BLACK;
+			else if (tmp == "1" || tmp == "black") {
+				modex = 1;
+			}
+			else if (tmp == "2" || tmp == "black") {
+				modex = 2;
 			}
 			else {
 				gtp_fail_printf(id, "syntax error");
@@ -522,6 +525,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 			}
 			// start thinking
 			{
+				who = FastBoard::BLACK;
 				int move;
 				std::string vertex;
 
@@ -546,14 +550,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 					{
 						game.set_to_move(who);
 						myprintf("start %d time shot\n", ti + 1);
-						search->think_shot(who, 0, move, 50000, 1, 1);
-
-					}
-					for (int ti = 0; ti < 10; ti++)
-					{
-						game.set_to_move(who);
-						myprintf("start %d time shot\n", ti + 1);
-						search->think_shot(who, 0, move, 50000, 0, 1);
+						search->think_shot(who, 0, move, 50000, modex, 0);
 
 					}
 					//vertex = game.move_to_text(move);
