@@ -1225,10 +1225,10 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 				}
 			}
 		}
-		/*
+		
 		if (isroot && bestmove > -1)
 		{
-			for (int tmpi = 0; tmpi < child_in_round.size(); tmpi++)
+			for (int tmpi = 0; tmpi < child_in_round.size() && tmpi <10; tmpi++)
 			{
 				std::string vertex;
 				vertex = m_rootstate.move_to_text(m_root->m_children[child_in_round[tmpi]]->get_move());
@@ -1240,7 +1240,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 			}
 			myprintf("\n\n\n\n\n\n");
 		}
-		*/
+		
 		child_in_round = get_new_round_children(child_in_round, node);
 
 		if (isroot && bestmove>-1)
