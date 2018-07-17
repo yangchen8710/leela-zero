@@ -454,18 +454,18 @@ bool GTP::execute(GameState & game, std::string xinput) {
 				game.display_state();
 				break;
 			}
-				
 			game.play_move(move);
 			vertex = game.move_to_text(move);
 			gtp_printf(id, "0:%s", vertex.c_str());
+
 			game.set_to_move(who2);
-			vertex = game.move_to_text(move);
 			move = search->think_shot(who2, 2, -2,5000, 2,0);
 			if (move == -1 || move == -2)
 			{
 				game.display_state();
 				break;
 			}
+			vertex = game.move_to_text(move);
 			gtp_printf(id, "1:%s", vertex.c_str());
 			count += 2;
 			game.play_move(move);

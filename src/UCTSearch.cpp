@@ -1187,7 +1187,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 				//	myprintf("po_times %d,budgetUsed %d,playouts %d,after_po %d\n", po_times, nu, np, node->m_children[child_in_round[tmpi]]->shot_po_count);
 				budgetUsed += nu;
 				playouts += np;
-				wins += 1.0*np - nw;
+				wins += nw;
 				node->update_shot(np, 1.0*np - nw);
 				//update
 			}
@@ -1213,16 +1213,18 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 			{
 				std::string vertex;
 				vertex = m_rootstate.move_to_text(m_root->m_children[child_in_round[tmpi]]->get_move());
-				myprintf("move:%s,wins %f,po %d\n",
+				myprintf("move:%s,wins %f,po %d,rate %f\n",
 					vertex.c_str(),
 					m_root->m_children[child_in_round[tmpi]]->shot_wins,
-					m_root->m_children[child_in_round[tmpi]]->shot_po_count);
+					m_root->m_children[child_in_round[tmpi]]->shot_po_count,
+					1.0*m_root->m_children[child_in_round[tmpi]]->shot_wins/ m_root->m_children[child_in_round[tmpi]]->shot_po_count);
 			}
 			myprintf("\n\n\n\n\n\n");
 		}
 
 		{
 			std::vector<float> child_sh_score_in_round;
+			child_sh_score_in_round.clear();
 
 			int n = child_in_round.size();
 			for (int tmpj = 0; tmpj < n; tmpj++)
@@ -1258,13 +1260,15 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 			{
 				std::string vertex;
 				vertex = m_rootstate.move_to_text(m_root->m_children[child_in_round[tmpi]]->get_move());
-				myprintf("move:%s,wins %f,po %d\n",
+				myprintf("move:%s,wins %f,po %d,rate %f\n",
 					vertex.c_str(),
 					m_root->m_children[child_in_round[tmpi]]->shot_wins,
-					m_root->m_children[child_in_round[tmpi]]->shot_po_count);
+					m_root->m_children[child_in_round[tmpi]]->shot_po_count,
+					1.0*m_root->m_children[child_in_round[tmpi]]->shot_wins / m_root->m_children[child_in_round[tmpi]]->shot_po_count);
 			}
 			myprintf("\n\n\n\n\n\n");
 		}
+
 		child_in_round = get_new_round_children(child_in_round, node);
 
 		if (isroot && bestmove>-1)
