@@ -990,7 +990,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 			case 2://use value net instead of random playout
 				const auto raw_netlist = Network::get_scored_moves(
 					&currstate, Network::Ensemble::RANDOM_SYMMETRY);
-				result =  raw_netlist.winrate;
+				result =1-  raw_netlist.winrate;
 				
 				break;
 		}
@@ -1054,7 +1054,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		playouts += np;
 		wins += nw;
 		//update
-		node->update_shot(np, 1.0*np - nw);
+		node->update_shot(np, nw);
 	}
 	
 	//thesis algorithm:if t.budgetNode <= |S|
@@ -1087,7 +1087,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 				playouts += np;
 				wins += nw;
 				//update
-				node->update_shot(np, 1.0*np - nw);
+				node->update_shot(np, nw);
 				playedBudget++;
 			}
 		}
@@ -1195,7 +1195,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 				budgetUsed += nu;
 				playouts += np;
 				wins += nw;
-				node->update_shot(np, 1.0*np - nw);
+				node->update_shot(np, nw);
 				//update
 			}
 				if (budgetUsed >= buget)
