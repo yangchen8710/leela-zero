@@ -1011,7 +1011,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		}
 			
 	}
-	myprintf("child_in_round.size() %d,node->m_children %d\n", child_in_round.size(), node->m_children.size());
+	//myprintf("child_in_round.size() %d,node->m_children %d\n", child_in_round.size(), node->m_children.size());
 	//myprintf("\n");
 	//thesis algorithm:if|S|==1
 	if (child_in_round.size() == 1)
@@ -1076,15 +1076,16 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 	int round_no = 0;
 	int roundbudgetsSumUpdate = 0;
 
-	myprintf("buget %d,round_sum %d,child_in_round.size() %d\n", buget, round_sum, child_in_round.size());
+	//myprintf("buget %d,round_sum %d,child_in_round.size() %d\n", buget, round_sum, child_in_round.size());
 	int flag = 1;
 	while (child_in_round.size() > 1)
 	{
 		round_no++;
+		/*
 		if (isroot)
 		{
 			myprintf("round %d,child_in_round.size() %d,po_sum_to_increase %d\n", round_no, child_in_round.size(), po_sum_to_increase);
-		}
+		}*/
 
 		
 			
@@ -1200,11 +1201,9 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		{
 			break;
 		}
-		if (isroot)
-			myprintf("update:buget %d, budgetUsed %d, playouts %d, wins %f, \n", buget, budgetUsed, playouts, wins);
+		//if (isroot)
+		//	myprintf("update:buget %d, budgetUsed %d, playouts %d, wins %f, \n", buget, budgetUsed, playouts, wins);
 	}
-	if (isroot)
-	 myprintf("update:buget %d, budgetUsed %d, playouts %d, wins %f, \n", buget, budgetUsed, playouts, wins);
 	//thesis algorithm:return first move of S
 	if (child_in_round.size()==1)
 		return node->m_children[child_in_round[0]].get_move();
