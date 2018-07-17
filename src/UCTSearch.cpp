@@ -1217,8 +1217,8 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 					vertex.c_str(),
 					m_root->m_children[child_in_round[tmpi]]->shot_wins,
 					m_root->m_children[child_in_round[tmpi]]->shot_po_count);
-				myprintf("\n\n\n\n\n\n");
 			}
+			myprintf("\n\n\n\n\n\n");
 		}
 
 		child_in_round = get_new_round_children(child_in_round, node);

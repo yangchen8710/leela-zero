@@ -516,7 +516,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 					vertex = game.move_to_text(move);
 					gtp_printf(id, "bestmoveis:%s", vertex.c_str());
 
-					for (int ti = 0; ti < 10; ti++)
+					for (int ti = 0; ti < 1; ti++)
 					{
 						game.set_to_move(who);
 						myprintf("start %d time shot\n", ti + 1);
