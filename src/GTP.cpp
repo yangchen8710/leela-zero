@@ -475,6 +475,32 @@ bool GTP::execute(GameState & game, std::string xinput) {
 
 
 	}
+	else if (command.find("gentest") == 0) {
+		std::istringstream cmdstream(command);
+		std::string tmp;
+
+		cmdstream >> tmp;  // eat genmove
+		cmdstream >> tmp;
+
+		if (!cmdstream.fail()) {
+			int who;
+			if (tmp == "w" || tmp == "white") {
+				who = FastBoard::WHITE;
+			}
+			else if (tmp == "b" || tmp == "black") {
+				who = FastBoard::BLACK;
+			}
+			else {
+				gtp_fail_printf(id, "syntax error");
+				return 1;
+			}
+			// start thinking
+			{
+				game.set_to_move(who);
+				search->test(who);
+			}
+		}
+	}
 	else if (command.find("genshot") == 0) {
 		std::istringstream cmdstream(command);
 		std::string tmp;

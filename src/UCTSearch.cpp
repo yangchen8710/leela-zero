@@ -1049,10 +1049,11 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		nu = np = nw = 0;
 		auto nextstate = std::make_unique<GameState>(currstate);
 		nextstate->play_move(node->m_children[child_in_round[0]]->get_move());
+		
 		shot(*nextstate, (node->m_children[child_in_round[0]]).get(), rd, buget, nu, np, nw,false, po_res_mode, pw,bestmove);
 		budgetUsed += nu;
 		playouts += np;
-		wins += nw;
+		wins += 1.0*np-nw;
 		//update
 		node->update_shot(np, nw);
 	}
@@ -1078,14 +1079,16 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 			if ((*nodexx).shot_po_count == 0)
 			{
 				auto nextstate = std::make_unique<GameState>(currstate);
+				//myprintf("color %d,", nextstate->get_to_move());
 				nextstate->play_move(node->m_children[child_idx]->get_move());
 				int nu, np;
 				double nw;
 				nu = np = nw = 0;
+				//myprintf("color %d\n", nextstate->get_to_move());
 				shot(*nextstate, (node->m_children[child_idx].get()), rd, 1, nu, np, nw,false, po_res_mode, pw,bestmove);
 				budgetUsed += nu;
 				playouts += np;
-				wins += nw;
+				wins += 1.0*np - nw;
 				//update
 				node->update_shot(np, nw);
 				playedBudget++;
@@ -1194,11 +1197,8 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 				}
 				budgetUsed += nu;
 				playouts += np;
-				wins += nw;
-				if(isroot)
-					node->update_shot(np, nw);
-				else
-					node->update_shot(np, 1.0*np - nw);
+				wins += 1.0*np-nw;
+				node->update_shot(np, nw);
 				//update
 			}
 				if (budgetUsed >= buget)
@@ -1323,7 +1323,13 @@ int UCTSearch::think_shot(int color, passflag_t passflag,int bestmove,int coin,i
 	//m_last_rootstate = std::make_unique<GameState>(m_rootstate);
 	return resmove;
 }
-
+int UCTSearch::test(int color, passflag_t passflag) {
+	update_root();
+	m_rootstate.board.set_to_move(color);
+	const auto raw_netlist = Network::get_scored_moves(
+		&m_rootstate, Network::Ensemble::RANDOM_SYMMETRY);
+	myprintf("winrate: %f\n", raw_netlist.winrate);
+}
 int UCTSearch::think(int color, passflag_t passflag) {
     // Start counting time for us
     m_rootstate.start_clock(color);
