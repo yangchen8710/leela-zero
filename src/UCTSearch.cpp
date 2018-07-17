@@ -1011,7 +1011,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		}
 			
 	}
-	//myprintf("child_in_round.size() %d,node->m_children %d\n", child_in_round.size(), node->m_children.size());
+	myprintf("child_in_round.size() %d,node->m_children %d\n", child_in_round.size(), node->m_children.size());
 	//myprintf("\n");
 	//thesis algorithm:if|S|==1
 	if (child_in_round.size() == 1)
@@ -1033,6 +1033,8 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 	//do playout at children node at least for one time
 	int budgetNode = node->shot_po_count;
 	int playedBudget = 0;
+	//myprintf("child_in_round.size() %d,node->m_children %d\n", child_in_round.size(), node->m_children.size());
+
 	if (budgetNode <= child_in_round.size())
 	{
 		for (int tmpi = 0; tmpi < child_in_round.size(); tmpi++)
@@ -1074,11 +1076,16 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 	int round_no = 0;
 	int roundbudgetsSumUpdate = 0;
 
-	//myprintf("buget %d,round_sum %d,child_in_round.size() %d\n", buget, round_sum, child_in_round.size());
+	myprintf("buget %d,round_sum %d,child_in_round.size() %d\n", buget, round_sum, child_in_round.size());
 	int flag = 1;
 	while (child_in_round.size() > 1)
 	{
 		round_no++;
+		if (isroot)
+		{
+			myprintf("round %d,child_in_round.size() %d,po_sum_to_increase %d\n", round_no, child_in_round.size(), po_sum_to_increase);
+		}
+
 		
 			
 		int roundbudgetsSum = (bugetSum) / (round_sum);
@@ -1109,12 +1116,8 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		//po_sum_to_increase = (bugetSum - node->shot_po_count) / (round_sum - round_no+1)/ child_in_round.size();
 		//po_sum_to_increase = (round_no * roundbudgetsSum - node->shot_po_count)/ child_in_round.size();
 		//myprintf("node_budgets %d,po_sum_to_increase %d\n", node_budgets, po_sum_to_increase);
-		/*
-		if (isroot)
-		{
-			myprintf("round %d,child_in_round.size() %d,po_sum_to_increase %d\n", round_no, child_in_round.size(), po_sum_to_increase);
-		}
-		*/
+		
+
 		for (int tmpi = 0; tmpi < child_in_round.size(); tmpi++)
 		{
 			//myprintf("tmpi %d,child_in_round[tmpi] %d\n", tmpi, child_in_round[tmpi]);
@@ -1197,9 +1200,11 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		{
 			break;
 		}
-		
+		if (isroot)
+			myprintf("update:buget %d, budgetUsed %d, playouts %d, wins %f, \n", buget, budgetUsed, playouts, wins);
 	}
-	//myprintf("update:buget %d, budgetUsed %d, playouts %d, wins %f, \n", buget, budgetUsed, playouts, wins);
+	if (isroot)
+	 myprintf("update:buget %d, budgetUsed %d, playouts %d, wins %f, \n", buget, budgetUsed, playouts, wins);
 	//thesis algorithm:return first move of S
 	if (child_in_round.size()==1)
 		return node->m_children[child_in_round[0]].get_move();
@@ -1241,7 +1246,7 @@ int UCTSearch::think_shot(int color, passflag_t passflag,int bestmove) {
 	int playouts = 0;
 	double wins = 0;
 	int poresmode = 0;
-	int resmove = shot(m_rootstate, m_root.get(), rd, 5000, budgetUsed, playouts, wins, true, poresmode,0,bestmove);
+	int resmove = shot(m_rootstate, m_root.get(), rd, 50000, budgetUsed, playouts, wins, true, poresmode,0,bestmove);
 
 	//m_last_rootstate = std::make_unique<GameState>(m_rootstate);
 	return resmove;

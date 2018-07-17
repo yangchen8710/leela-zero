@@ -440,8 +440,8 @@ bool GTP::execute(GameState & game, std::string xinput) {
 	}
 	else if (command.find("gengame") == 0)
 	{
-		auto who1 = FastBoard::WHITE;
-		auto who2 = FastBoard::BLACK;
+		auto who1 = FastBoard::BLACK;
+		auto who2 = FastBoard::WHITE;
 		int move;
 		std::string vertex;
 		while (1)
@@ -453,7 +453,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 			game.play_move(move);
 			vertex = game.move_to_text(move);
 			gtp_printf(id, "0:%s", vertex.c_str());
-			
+			return true;
 			game.set_to_move(who2);
 			vertex = game.move_to_text(move);
 			move = search->think_shot(who2, 2, 0);
