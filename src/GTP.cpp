@@ -448,7 +448,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 		while (1)
 		{
 			game.set_to_move(who1);
-			move = search->think_shot(who1, 2, -2, 5000, 0,0);
+			move = search->think_shot(who1, 2, -2, 5000, 2,0);
 			if (move == -1 || move == -2)
 			{
 				game.display_state();
