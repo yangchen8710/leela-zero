@@ -1211,8 +1211,10 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		
 		for (int tmpi = 0; tmpi < child_in_round.size(); tmpi++)
 		{
+			std::string vertex;
+			vertex = m_rootstate.move_to_text(m_root->m_children[child_in_round[tmpi]]->get_move());
 			myprintf("move:%s,wins %d,po %d\n",
-				m_rootstate.move_to_text(m_root->m_children[child_in_round[tmpi]]->get_move()),
+				vertex.c_str(), 
 				m_root->m_children[child_in_round[tmpi]]->shot_wins,
 				m_root->m_children[child_in_round[tmpi]]->shot_po_count);
 		}
