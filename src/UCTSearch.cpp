@@ -978,6 +978,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 					result = 1.0;
 				else
 					result = 0.0;
+				result = 1.0 - result;
 				break;
 			case 1://use policy playout
 				res_int = random_playout(*resrstate, rd,1);
@@ -986,6 +987,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 					result = 1.0;
 				else
 					result = 0.0;
+				result = 1.0 - result;
 				break;
 			case 2://use value net instead of random playout
 				const auto raw_netlist = Network::get_scored_moves(
