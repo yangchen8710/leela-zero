@@ -1215,6 +1215,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 
 		if (isroot && bestmove>-1)
 		{
+			myprintf("child_in_round.size: %d", child_in_round.size());
 			for (int tmpi = 0; tmpi < child_in_round.size(); tmpi++)
 			{
 				if (m_root->m_children[child_in_round[tmpi]]->get_move() == bestmove)
