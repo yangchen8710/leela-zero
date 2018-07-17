@@ -990,7 +990,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 			case 2://use value net instead of random playout
 				const auto raw_netlist = Network::get_scored_moves(
 					&currstate, Network::Ensemble::RANDOM_SYMMETRY);
-				result =1-  raw_netlist.winrate;
+				result =raw_netlist.winrate;
 				
 				break;
 		}
