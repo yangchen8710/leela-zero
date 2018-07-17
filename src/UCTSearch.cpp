@@ -753,9 +753,9 @@ std::vector<int> UCTSearch::sort_round_children(std::vector<int> child_in_round,
 	for (int tmpj = 0; tmpj < n; tmpj++)
 	{
 		int child_idx = child_in_round[tmpj];
-		int child_rp_count = node->m_children[child_idx]->shot_po_count;
-		int child_rp_win = node->m_children[tmpj]->shot_wins;
-		float child_rp_winrate;
+		double child_rp_count = 1.0* node->m_children[child_idx]->shot_po_count;
+		double child_rp_win = node->m_children[tmpj]->shot_wins;
+		double child_rp_winrate;
 		if (child_rp_win == 0)
 			child_rp_winrate = 0;
 		else
