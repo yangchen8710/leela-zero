@@ -763,7 +763,7 @@ std::vector<int> UCTSearch::sort_round_children(std::vector<int> child_in_round,
 		child_sh_score_in_round.emplace_back(child_rp_winrate);
 	}
 
-	for (int i = 0; i < n ; i++) {
+	for (int i = 0; i < n- 1; i++) {
 		for (int j = 0; j < n - i - 1; j++) {
 			if (child_sh_score_in_round[j] < child_sh_score_in_round[j + 1]) {
 				float tempf = child_sh_score_in_round[j];
@@ -1221,6 +1221,50 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 			myprintf("\n\n\n\n\n\n");
 		}
 
+		{
+			std::vector<float> child_sh_score_in_round;
+
+			int n = child_in_round.size();
+			for (int tmpj = 0; tmpj < n; tmpj++)
+			{
+				int child_idx = child_in_round[tmpj];
+				double child_rp_count = 1.0* node->m_children[child_idx]->shot_po_count;
+				double child_rp_win = node->m_children[tmpj]->shot_wins;
+				double child_rp_winrate;
+				if (child_rp_win == 0)
+					child_rp_winrate = 0;
+				else
+					child_rp_winrate = 1.0f * child_rp_win / child_rp_count;
+				child_sh_score_in_round.emplace_back(child_rp_winrate);
+			}
+
+			for (int i = 0; i < n - 1; i++) {
+				for (int j = 0; j < n - i - 1; j++) {
+					if (child_sh_score_in_round[j] < child_sh_score_in_round[j + 1]) {
+						float tempf = child_sh_score_in_round[j];
+						int tempi = child_in_round[j];
+						child_sh_score_in_round[j] = child_sh_score_in_round[j + 1];
+						child_in_round[j] = child_in_round[j + 1];
+						child_sh_score_in_round[j + 1] = tempf;
+						child_in_round[j + 1] = tempi;
+					}
+				}
+			}
+		}
+
+		if (isroot && bestmove > -1)
+		{
+			for (int tmpi = 0; tmpi < child_in_round.size(); tmpi++)
+			{
+				std::string vertex;
+				vertex = m_rootstate.move_to_text(m_root->m_children[child_in_round[tmpi]]->get_move());
+				myprintf("move:%s,wins %f,po %d\n",
+					vertex.c_str(),
+					m_root->m_children[child_in_round[tmpi]]->shot_wins,
+					m_root->m_children[child_in_round[tmpi]]->shot_po_count);
+			}
+			myprintf("\n\n\n\n\n\n");
+		}
 		child_in_round = get_new_round_children(child_in_round, node);
 
 		if (isroot && bestmove>-1)
