@@ -448,7 +448,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 		while (1)
 		{
 			game.set_to_move(who1);
-			move = search->think_shot(who1, 0, 0);
+			move = search->think_shot(who1, 2, -2, 5000, 0,0);
 			if (move == -1 || move == -2)
 			{
 				game.display_state();
@@ -460,7 +460,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 			gtp_printf(id, "0:%s", vertex.c_str());
 			game.set_to_move(who2);
 			vertex = game.move_to_text(move);
-			move = search->think_shot(who2, 2, 0);
+			move = search->think_shot(who2, 2, -2,5000, 2,0);
 			if (move == -1 || move == -2)
 			{
 				game.display_state();
@@ -520,7 +520,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 					{
 						game.set_to_move(who);
 						myprintf("start %d time shot\n", ti + 1);
-						search->think_shot(who, 0, move);
+						search->think_shot(who, 0, move,50000,2,1);
 						
 					}
 					//vertex = game.move_to_text(move);
