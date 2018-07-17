@@ -1054,7 +1054,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		playouts += np;
 		wins += nw;
 		//update
-		node->update_shot(playouts, wins);
+		node->update_shot(np, 1.0*np - nw);
 	}
 	
 	//thesis algorithm:if t.budgetNode <= |S|
@@ -1085,9 +1085,9 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 				shot(*nextstate, (node->m_children[child_idx].get()), rd, 1, nu, np, nw,false, po_res_mode, pw,bestmove);
 				budgetUsed += nu;
 				playouts += np;
-				wins += 1.0*np-nw;
+				wins += nw;
 				//update
-				node->update_shot(np, nw);
+				node->update_shot(np, 1.0*np - nw);
 				playedBudget++;
 			}
 		}
@@ -1187,8 +1187,8 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 				//	myprintf("po_times %d,budgetUsed %d,playouts %d,after_po %d\n", po_times, nu, np, node->m_children[child_in_round[tmpi]]->shot_po_count);
 				budgetUsed += nu;
 				playouts += np;
-				wins += nw;
-				node->update_shot(np, nw);
+				wins += 1.0*np - nw;
+				node->update_shot(np, 1.0*np - nw);
 				//update
 			}
 				if (budgetUsed >= buget)
