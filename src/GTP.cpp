@@ -499,7 +499,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 				int move;
 				std::string vertex;
 
-				for (int tmpj = 1; tmpj < 6; tmpj++)
+				for (int tmpj = 4; tmpj < 5; tmpj++)
 				{
 					auto filename = "0" + std::to_string(tmpj) + ".sgf";
 					if (tmpj != 0)
