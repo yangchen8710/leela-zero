@@ -945,7 +945,7 @@ int progressivew(int n)
 
 double UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,int& budgetUsed,int& playouts,double& wins,bool isroot,int po_res_mode ,int pw,int bestmove)
 {	//myprintf("isroot %d.\n", isroot);
-	//myprintf("buget %d, budgetUsed %d, playouts %d, wins %d, \n", buget, budgetUsed, playouts, wins);
+	myprintf("buget %d, budgetUsed %d, playouts %d, wins %d, \n", buget, budgetUsed, playouts, wins);
 		
 	//thesis algorithm:board is terminal
 	if (node->m_children.size() == 1)//terminal
@@ -1069,15 +1069,14 @@ double UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buge
 	if (budgetNode <= child_in_round.size())
 	{
 		double best_rate = 0;
-		int usedinthisfor;
+		int usedinthisfor =0;
 		for (int tmpi = 0; tmpi < child_in_round.size(); tmpi++)
 		{
 			node->inflate_all_children();
 			int child_idx = child_in_round[tmpi];
 			if (budgetUsed >= buget)
 			{
-				budgetUsed += usedinthisfor;
-				playouts += usedinthisfor;
+
 				wins += (1-best_rate) * usedinthisfor;
 				//update
 				node->update_shot(usedinthisfor, best_rate * usedinthisfor);
@@ -1099,6 +1098,8 @@ double UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buge
 				double winrate = shot(*nextstate, (node->m_children[child_idx].get()), rd, 1, nu, np, nw,false, po_res_mode, pw,bestmove);
 				if (winrate > best_rate)
 					best_rate = winrate;
+				budgetUsed += np;
+				playouts += np;
 				usedinthisfor += np;
 				playedBudget++;
 			}
