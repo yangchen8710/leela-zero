@@ -445,31 +445,33 @@ bool GTP::execute(GameState & game, std::string xinput) {
 		int move;
 		std::string vertex;
 		int count = 0;
+		int games = 0;
+		int wins = 0;
 		while (1)
 		{
 			game.set_to_move(who1);
-			move = search->think_shot(who1, 2, -2, 5000, 2,0);
-			if (move == -1 || move == -2)
-			{
-				game.display_state();
-				break;
-			}
+			//move = search->think_shot(who1, 2, -2, 5000, 2,0);
+			move = search->think(who1);
 			game.play_move(move);
-			vertex = game.move_to_text(move);
-			gtp_printf(id, "0:%s", vertex.c_str());
-
+			//vertex = game.move_to_text(move);
+			//gtp_printf(id, "0:%s", vertex.c_str());
 			game.set_to_move(who2);
-			move = search->think_shot(who2, 2, -2,5000, 2,0);
+			move = search->think_shot(who2, 2, -2,50000, 2,1);
 			if (move == -1 || move == -2)
 			{
+				games++;
+				if (move == -1)
+					wins++;
 				game.display_state();
 				break;
 			}
-			vertex = game.move_to_text(move);
-			gtp_printf(id, "1:%s", vertex.c_str());
-			count += 2;
+			//vertex = game.move_to_text(move);
+			//gtp_printf(id, "1:%s", vertex.c_str());
+			
 			game.play_move(move);
-			game.display_state();
+			count += 2;
+			if(count%10==0)
+				game.display_state();
 		}
 
 
