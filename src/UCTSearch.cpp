@@ -1226,8 +1226,7 @@ double UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buge
 				*/
 				budgetUsed += nu;
 				playouts += np;
-				wins += (1.0- winrate)*np;
-				node->update_shot(np, winrate*np);
+
 				//update
 			}
 				if (budgetUsed >= buget)
@@ -1308,10 +1307,15 @@ double UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buge
 		//	myprintf("update:buget %d, budgetUsed %d, playouts %d, wins %f, \n", buget, budgetUsed, playouts, wins);
 	}
 	//thesis algorithm:return first move of S
-	
 	if (isroot)
 		return node->m_children[child_in_round[0]].get_move();
-	return node->m_children[child_in_round[0]]->shot_wins/ node->m_children[child_in_round[0]]->shot_po_count;
+
+	double best_rate = node->m_children[child_in_round[0]]->shot_wins / node->m_children[child_in_round[0]]->shot_po_count;
+	wins += (best_rate)* budgetUsed;
+	//update
+	node->update_shot(budgetUsed, (1 - best_rate) * budgetUsed);
+	return 1 - best_rate;
+	
 }
 
 int UCTSearch::think_shot(int color, passflag_t passflag,int bestmove,int coin,int poresmode,int pw) {
