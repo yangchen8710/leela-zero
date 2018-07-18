@@ -1311,7 +1311,7 @@ double UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buge
 	
 	if (isroot)
 		return node->m_children[child_in_round[0]].get_move();
-	return 1.0-node->m_children[child_in_round[0]]->shot_wins/ node->m_children[child_in_round[0]]->shot_po_count;
+	return node->m_children[child_in_round[0]]->shot_wins/ node->m_children[child_in_round[0]]->shot_po_count;
 }
 
 int UCTSearch::think_shot(int color, passflag_t passflag,int bestmove,int coin,int poresmode,int pw) {
