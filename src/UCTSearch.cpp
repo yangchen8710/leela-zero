@@ -1076,10 +1076,27 @@ double UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buge
 			int child_idx = child_in_round[tmpi];
 			if (budgetUsed >= buget)
 			{
-
-				wins += (1-best_rate) * usedinthisfor;
+				//sort
+				{
+					int tpn = child_in_round.size();
+					for (int tmpi = 0; tmpi < tpn - 1; tmpi++) {
+						for (int tmpj = 0; tmpj < tpn - tmpi - 1; tmpj++) {
+							double child_rp_count = 1.0* node->m_children[child_in_round[tmpj]]->shot_po_count;
+							double child_rp_win = node->m_children[child_in_round[tmpj]]->shot_wins;
+							double child_rp_counto = 1.0* node->m_children[child_in_round[tmpj + 1]]->shot_po_count;
+							double child_rp_wino = node->m_children[child_in_round[tmpj + 1]]->shot_wins;
+							if (child_rp_win / child_rp_count < child_rp_wino / child_rp_counto) {
+								int tempi = child_in_round[tmpj];
+								child_in_round[tmpj] = child_in_round[tmpj + 1];
+								child_in_round[tmpj + 1] = tempi;
+							}
+						}
+					}
+				}
+				best_rate = node->m_children[child_in_round[0]]->shot_wins / node->m_children[child_in_round[0]]->shot_po_count;
+				wins += (best_rate) * usedinthisfor;
 				//update
-				node->update_shot(usedinthisfor, best_rate * usedinthisfor);
+				node->update_shot(usedinthisfor, (1-best_rate) * usedinthisfor);
 				return 1 - best_rate;
 			}
 			auto& nodex = node->m_children[child_idx];
