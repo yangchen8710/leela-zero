@@ -544,15 +544,20 @@ bool GTP::execute(GameState & game, std::string xinput) {
 					game.set_to_move(who);
 					move = search->think(who);
 					vertex = game.move_to_text(move);
+
 					gtp_printf(id, "bestmoveis:%s", vertex.c_str());
 
-					for (int ti = 0; ti < 10; ti++)
+					int time = 10;
+					if (modex == 2)
+						time = 1;
+					for (int ti = 0; ti < time; ti++)
 					{
 						game.set_to_move(who);
 						myprintf("start %d time shot\n", ti + 1);
 						search->think_shot(who, 0, move, 50000, modex, 0);
 
 					}
+
 					//vertex = game.move_to_text(move);
 					//gtp_printf(id, "sh:%s", vertex.c_str());
 				}
