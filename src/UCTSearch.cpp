@@ -945,7 +945,7 @@ int progressivew(int n)
 
 double UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,int& budgetUsed,int& playouts,double& wins,bool isroot,int po_res_mode ,int pw,int bestmove)
 {	//myprintf("isroot %d.\n", isroot);
-	myprintf("buget %d, budgetUsed %d, playouts %d, wins %d, \n", buget, budgetUsed, playouts, wins);
+	//myprintf("buget %d, budgetUsed %d, playouts %d, wins %d, \n", buget, budgetUsed, playouts, wins);
 		
 	//thesis algorithm:board is terminal
 	if (node->m_children.size() == 1)//terminal
