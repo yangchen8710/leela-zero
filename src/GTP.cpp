@@ -32,6 +32,7 @@
 #include <string>
 #include <vector>
 
+#include <time.h>  
 #include "FastBoard.h"
 #include "FullBoard.h"
 #include "GameState.h"
@@ -41,6 +42,7 @@
 #include "Training.h"
 #include "UCTSearch.h"
 #include "Utils.h"
+#include "Timing.h"
 
 using namespace Utils;
 
@@ -447,13 +449,13 @@ bool GTP::execute(GameState & game, std::string xinput) {
 		int count = 0;
 		while (1)
 		{
-			
+			time_t   start, elapsed, start2, elapsed2 ;
 			game.set_to_move(who1);
-			Time start;
+			start = time(NULL);
 			move = search->think_shot(who1, 2, -2, 5000, 0,0);
-			Time elapsed;
-			int elapsed_centis = Time::timediff_centis(start, elapsed);
-			gtp_printf(id, "player1 time: %fs\n", elapsed_centis/100);
+			elapsed = time(NULL);
+			double elapsed_centis = difftime(elapsed, start);
+			gtp_printf(id, "player1 time: %fs\n", elapsed_centis);
 			if (move == -1 || move == -2)
 			{
 				game.display_state();
@@ -465,11 +467,11 @@ bool GTP::execute(GameState & game, std::string xinput) {
 			gtp_printf(id, "0:%s", vertex.c_str());
 
 			game.set_to_move(who2);
-			Time start2;
-			move = search->think_shot(who2, 2, -2,5000, 1,0);
-			Time elapsed2;
-			elapsed_centis = Time::timediff_centis(start2, elapsed2);
-			gtp_printf(id, "player2 time: %fs\n", elapsed_centis/100);
+			start = time(NULL);
+			move = search->think_shot(who1, 2, -2, 5000, 1, 0);
+			elapsed = time(NULL);
+			double elapsed_centis = difftime(elapsed, start);
+			gtp_printf(id, "player2 time: %fs\n", elapsed_centis);
 			if (move == -1 || move == -2)
 			{
 				game.display_state();
