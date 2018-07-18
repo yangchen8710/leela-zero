@@ -191,7 +191,7 @@ void UCTNode::prepare_root_node(int color,
         update(root_eval);
         root_eval = (color == FastBoard::BLACK ? root_eval : 1.0f - root_eval);
     }
-    Utils::myprintf("NN eval=%f\n", root_eval);
+    //Utils::myprintf("NN eval=%f\n", root_eval);
 
     // There are a lot of special cases where code assumes
     // all children of the root are inflated, so do that.

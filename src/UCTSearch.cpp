@@ -29,6 +29,8 @@
 #include <limits>
 #include <memory>
 #include <type_traits>
+#include <fstream>
+#include <iostream>
 
 #include "FastBoard.h"
 #include "FastState.h"
@@ -627,7 +629,7 @@ int UCTSearch::gen_policy_move(GameState& state, Random rd)
 {
 	const auto raw_netlist = Network::get_scored_moves(
 		&state, Network::Ensemble::RANDOM_SYMMETRY);
-	if (raw_netlist.winrate > 0.95 || raw_netlist.winrate < 0.05)
+	if (raw_netlist.winrate > 0.9 || raw_netlist.winrate < 0.1)
 		return FastBoard::PASS;
 
 	std::vector<Network::ScoreVertexPair> nodelist;
@@ -1285,7 +1287,57 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 	if (child_in_round.size()==1)
 		return node->m_children[child_in_round[0]].get_move();
 }
-
+std::vector<double> UCTSearch::think_hist(int color, passflag_t passflag)
+{
+	update_root();
+	// set side to move
+	m_rootstate.board.set_to_move(color);
+	m_root->prepare_root_node(color, m_nodes, m_rootstate);
+	std::vector<double> value_list;
+	std::string value = "";
+	std::fstream  file;
+	file.open("out.txt", std::ios::app | std::ios::out);
+	for (int i = 0; i < m_root->m_children.size(); i++)
+	{
+		auto nextstate = std::make_unique<GameState>(m_rootstate);
+		int move = m_root->m_children[i]->get_move();
+		if (move == -1)
+			continue;
+		nextstate->play_move(move);
+		const auto raw_netlist = Network::get_scored_moves(
+			nextstate.get(), Network::Ensemble::RANDOM_SYMMETRY);
+		
+		value_list.emplace_back(raw_netlist.winrate);
+		//myprintf("%f,", raw_netlist.winrate);
+	}
+	int tpn = value_list.size();
+	{
+		for (int tmpi = 0; tmpi < tpn - 1; tmpi++) {
+			for (int tmpj = 0; tmpj < tpn - tmpi - 1; tmpj++) {
+				if (value_list[tmpj] > value_list[tmpj+1]) {
+					double tempi = value_list[tmpj];
+					value_list[tmpj] = value_list[tmpj + 1];
+					value_list[tmpj + 1] = tempi;
+				}
+			}
+		}
+	}
+	int count = 1;
+	int enumc = 0;
+	double sub_sum = 0;
+	for (int tmpi = 0; tmpi < tpn ; tmpi++) {
+		enumc++; 
+		sub_sum += 1 - value_list[tmpi];
+		if ((tmpi + 1) % count == 0) 
+		{
+			file << sub_sum/ count << ",";
+			sub_sum = 0;
+		}
+	}
+	file << "\n";
+	file.close();
+	return value_list;
+}
 int UCTSearch::think_shot(int color, passflag_t passflag,int bestmove,int coin,int poresmode,int pw) {
 
 	const auto raw_netlist = Network::get_scored_moves(
@@ -1328,10 +1380,13 @@ int UCTSearch::think_shot(int color, passflag_t passflag,int bestmove,int coin,i
 }
 int UCTSearch::test(int color, passflag_t passflag) {
 	update_root();
+	Random rd = Random(time(NULL));
+	srand((unsigned)time(NULL));
+	// set side to move
 	m_rootstate.board.set_to_move(color);
-	const auto raw_netlist = Network::get_scored_moves(
-		&m_rootstate, Network::Ensemble::RANDOM_SYMMETRY);
-	myprintf("winrate: %f\n", raw_netlist.winrate);
+	m_root->prepare_root_node(color, m_nodes, m_rootstate);
+	return m_root->m_children[0].get_move();
+	
 }
 int UCTSearch::think(int color, passflag_t passflag) {
     // Start counting time for us

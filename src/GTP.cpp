@@ -383,6 +383,24 @@ bool GTP::execute(GameState & game, std::string xinput) {
         }
         return true;
     }
+	else if (command.find("genhist") == 0)
+	{
+		int who;
+		who = FastBoard::BLACK;
+		auto filename = "02.sgf";
+		int movenum = 999;
+		auto sgftree = std::make_unique<SGFTree>();
+		sgftree->load_from_file(filename);
+		game = sgftree->follow_mainline_state(movenum - 1);
+		while (1)
+		{
+			game.set_to_move(who);
+			search->think_hist(who);
+			int move = search->test(who);
+			game.play_move(move);
+			who = 1 - who;
+		}
+	}
 	else if (command.find("genmosh") == 0) {
 		std::istringstream cmdstream(command);
 		std::string tmp;
@@ -452,7 +470,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 			time_t   start, elapsed, start2, elapsed2 ;
 			game.set_to_move(who1);
 			start = time(NULL);
-			move = search->think_shot(who1, 2, -2, 5000, 0,0);
+			move = search->think_shot(who1, 2, -2, 5000, 1,0);
 			elapsed = time(NULL);
 			double elapsed_centis = difftime(elapsed, start);
 			gtp_printf(id, "player1 time: %fs\n", elapsed_centis);
@@ -468,7 +486,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 
 			game.set_to_move(who2);
 			start = time(NULL);
-			move = search->think_shot(who2, 2, -2, 5000, 1, 0);
+			move = search->think_shot(who2, 2, -2, 5000, 0, 0);
 			elapsed = time(NULL);
 		    elapsed_centis = difftime(elapsed, start);
 			gtp_printf(id, "player2 time: %fs\n", elapsed_centis);
@@ -541,7 +559,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 				int move;
 				std::string vertex;
 
-				for (int tmpj = 1; tmpj < 6; tmpj++)
+				for (int tmpj = 2; tmpj < 6; tmpj++)
 				{
 					auto filename = "0" + std::to_string(tmpj) + ".sgf";
 					if (tmpj != 0)

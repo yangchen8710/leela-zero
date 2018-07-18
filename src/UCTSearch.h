@@ -100,6 +100,7 @@ public:
 	int gen_policy_move(GameState& state, Random rd);
 	std::vector<int> sort_round_children(std::vector<int> child_in_round, UCTNode* node);
 	std::vector<int> get_new_round_children(std::vector<int> child_in_round,UCTNode* node);
+	std::vector<double> think_hist(int color, passflag_t passflag = NORMAL);
 	int random_playout(GameState& state, Random rd,int mode = 0);
 	
     void set_playout_limit(int playouts);
