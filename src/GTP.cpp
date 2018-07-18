@@ -468,7 +468,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 
 			game.set_to_move(who2);
 			start = time(NULL);
-			move = search->think_shot(who1, 2, -2, 5000, 1, 0);
+			move = search->think_shot(who2, 2, -2, 5000, 1, 0);
 			elapsed = time(NULL);
 		    elapsed_centis = difftime(elapsed, start);
 			gtp_printf(id, "player2 time: %fs\n", elapsed_centis);

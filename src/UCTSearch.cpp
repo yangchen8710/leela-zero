@@ -692,9 +692,9 @@ int UCTSearch::gen_random_move(GameState& state, Random rd)
 
 
 	//auto move_idx = rd.randuint64(legal_moves.size());
-	auto move_idx = rand() % legal_moves.size();
+	//auto move_idx = rand() % legal_moves.size();
 
-	return legal_moves[move_idx];
+	return legal_moves[0];
 }
 
 int UCTSearch::random_playout(GameState& state, Random rd, int mode)
