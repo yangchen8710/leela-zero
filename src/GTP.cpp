@@ -554,7 +554,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 					{
 						game.set_to_move(who);
 						myprintf("start %d time shot\n", ti + 1);
-						search->think_shot(who, 0, move, 50000, modex, 0);
+						search->think_shot(who, 0, move, 50000, modex, 1);
 
 					}
 
