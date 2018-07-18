@@ -351,7 +351,6 @@ bool GTP::execute(GameState & game, std::string xinput) {
 
         cmdstream >> tmp;  // eat genmove
         cmdstream >> tmp;
-
         if (!cmdstream.fail()) {
             int who;
             if (tmp == "w" || tmp == "white") {
@@ -408,6 +407,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 
 				for (int tmpj = 1; tmpj < 6; tmpj++)
 				{
+					
 					auto filename = "0" + std::to_string(tmpj) + ".sgf";
 					if (tmpj != 0)
 					{
@@ -447,19 +447,29 @@ bool GTP::execute(GameState & game, std::string xinput) {
 		int count = 0;
 		while (1)
 		{
+			
 			game.set_to_move(who1);
-			move = search->think_shot(who1, 2, -2, 5000, 2,0);
+			Time start;
+			move = search->think_shot(who1, 2, -2, 5000, 0,0);
+			Time elapsed;
+			int elapsed_centis = Time::timediff_centis(start, elapsed);
+			gtp_printf(id, "player1 time: %fs\n", elapsed_centis/100);
 			if (move == -1 || move == -2)
 			{
 				game.display_state();
 				break;
 			}
+			
 			game.play_move(move);
 			vertex = game.move_to_text(move);
 			gtp_printf(id, "0:%s", vertex.c_str());
 
 			game.set_to_move(who2);
-			move = search->think_shot(who2, 2, -2,5000, 2,0);
+			Time start2;
+			move = search->think_shot(who2, 2, -2,5000, 0,0);
+			Time elapsed2;
+			int elapsed_centis = Time::timediff_centis(start2, elapsed2);
+			gtp_printf(id, "player2 time: %fs\n", elapsed_centis/100);
 			if (move == -1 || move == -2)
 			{
 				game.display_state();
