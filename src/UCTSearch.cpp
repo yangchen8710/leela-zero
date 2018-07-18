@@ -687,14 +687,14 @@ int UCTSearch::gen_random_move(GameState& state, Random rd)
 			legal_moves.emplace_back(vertex);
 		}
 	}
-	if (legal_moves.size() == 0)
+	if (legal_moves.size() <= 20)
 		return -1;
 
 
 	//auto move_idx = rd.randuint64(legal_moves.size());
 	auto move_idx = rand() % legal_moves.size();
 
-	return legal_moves[0];
+	return legal_moves[move_idx];
 }
 
 int UCTSearch::random_playout(GameState& state, Random rd, int mode)
