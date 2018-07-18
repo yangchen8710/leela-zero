@@ -8,3 +8,4 @@ training/tf/venv
 *.orig
 leelaz_opencl_tuning
 leelaz-model*
+out.txt
