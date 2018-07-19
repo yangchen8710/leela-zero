@@ -1465,7 +1465,7 @@ int UCTSearch::valuemove(int color, passflag_t passflag) {
 	m_root->prepare_root_node(color, m_nodes, m_rootstate);
 	double best_value=1.0;
 	int best_move=0;
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < m_root->m_children.size(); i++)
 	{
 		auto nextstate = std::make_unique<GameState>(m_rootstate);
 		int move = m_root->m_children[i]->get_move();

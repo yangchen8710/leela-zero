@@ -500,8 +500,8 @@ bool GTP::execute(GameState & game, std::string xinput) {
 				start = time(NULL);
 				Utils::myprintf("player %d,", nowcolor);
 				//move = search->think_shot(who2, 2, -2, 10000, 2, 1);
-				//move = search->valuemove(nowcolor);
-				move = search->policymove(nowcolor);
+				move = search->valuemove(nowcolor);
+				//move = search->policymove(nowcolor);
 				elapsed = time(NULL);
 				elapsed_centis = difftime(elapsed, start);
 				movecount++;
