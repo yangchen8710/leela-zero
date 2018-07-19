@@ -1378,7 +1378,7 @@ int UCTSearch::think_shot(int color, passflag_t passflag,int bestmove,int coin,i
 	//m_last_rootstate = std::make_unique<GameState>(m_rootstate);
 	return resmove;
 }
-int UCTSearch::test(int color, passflag_t passflag) {
+int UCTSearch::policymove(int color, passflag_t passflag) {
 	update_root();
 	Random rd = Random(time(NULL));
 	srand((unsigned)time(NULL));
@@ -1387,6 +1387,35 @@ int UCTSearch::test(int color, passflag_t passflag) {
 	m_root->prepare_root_node(color, m_nodes, m_rootstate);
 	return m_root->m_children[0].get_move();
 	
+}
+
+int UCTSearch::valuemove(int color, passflag_t passflag) {
+	update_root();
+	Random rd = Random(time(NULL));
+	srand((unsigned)time(NULL));
+	// set side to move
+	m_rootstate.board.set_to_move(color);
+	m_root->prepare_root_node(color, m_nodes, m_rootstate);
+	double best_value=1.0;
+	int best_move=0;
+	for (int i = 0; i < m_root->m_children.size(); i++)
+	{
+		auto nextstate = std::make_unique<GameState>(m_rootstate);
+		int move = m_root->m_children[i]->get_move();
+		if (move == -1)
+			continue;
+		nextstate->play_move(move);
+		const auto raw_netlist = Network::get_scored_moves(
+			nextstate.get(), Network::Ensemble::RANDOM_SYMMETRY);
+		if (best_value > raw_netlist.winrate)
+		{
+			best_value = raw_netlist.winrate;
+			best_move = i;
+		}
+
+	}
+	return  m_root->m_children[best_move]->get_move();
+	myprintf("best_value:%f,", 1.0 - best_value);
 }
 int UCTSearch::think(int color, passflag_t passflag) {
     // Start counting time for us

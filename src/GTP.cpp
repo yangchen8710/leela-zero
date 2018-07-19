@@ -396,7 +396,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 		{
 			game.set_to_move(who);
 			search->think_hist(who);
-			int move = search->test(who);
+			int move = search->policymove(who);
 			game.play_move(move);
 			who = 1 - who;
 		}
@@ -477,7 +477,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 				start = time(NULL);
 				//move = search->think_shot(who1, 2, -2, 5000, 2,0);
 				//move = search->think(who1);
-				move = search->test(who1);
+				move = search->policymove(who1);
 				elapsed = time(NULL);
 				double elapsed_centis = difftime(elapsed, start);
 				gtp_printf(id, "player1 time: %fs\n", elapsed_centis);
@@ -493,7 +493,8 @@ bool GTP::execute(GameState & game, std::string xinput) {
 
 				game.set_to_move(who2);
 				start = time(NULL);
-				move = search->think_shot(who2, 2, -2, 50000, 2, 0);
+				//move = search->think_shot(who2, 2, -2, 50000, 2, 0);
+				move = search->valuemove(who1);
 				elapsed = time(NULL);
 				elapsed_centis = difftime(elapsed, start);
 				gtp_printf(id, "player2 time: %fs\n", elapsed_centis);
@@ -536,7 +537,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 			// start thinking
 			{
 				game.set_to_move(who);
-				search->test(who);
+				search->policymove(who);
 			}
 		}
 	}

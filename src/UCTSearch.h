@@ -93,7 +93,8 @@ public:
 
     UCTSearch(GameState& g);
 	int think(int color, passflag_t passflag = NORMAL);
-	int test(int color, passflag_t passflag = NORMAL);
+	int policymove(int color, passflag_t passflag = NORMAL);
+	int valuemove(int color, passflag_t passflag = NORMAL);
 	int think_shot(int color, passflag_t passflag, int bestmove=-2, int coin = 50000, int poresmode = 0, int pw = 0);
 	int think_sh(int color, passflag_t passflag = NORMAL,int test = 0);
 	int gen_random_move(GameState& state, Random rd);
