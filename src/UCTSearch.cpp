@@ -1420,8 +1420,8 @@ int UCTSearch::valuemove(int color, passflag_t passflag) {
 		}
 
 	}
-	return  m_root->m_children[best_move]->get_move();
 	myprintf("best_value:%f,", 1.0 - best_value);
+	return  m_root->m_children[best_move]->get_move();
 }
 int UCTSearch::think(int color, passflag_t passflag) {
     // Start counting time for us
