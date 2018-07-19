@@ -946,11 +946,12 @@ int progressivew(int n)
 	}
 }
 
-int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,int& budgetUsed,int& playouts,double& wins,bool isroot,int po_res_mode ,int pw,int bestmove)
+double UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,int& budgetUsed,int& playouts,double& wins,bool isroot,int po_res_mode ,int pw,int bestmove)
 {	//myprintf("isroot %d.\n", isroot);
 	//myprintf("buget %d, budgetUsed %d, playouts %d, wins %d, \n", buget, budgetUsed, playouts, wins);
 		
 	//thesis algorithm:board is terminal
+	int mixmax = 1;
 	if (node->m_children.size() == 1)//terminal
 	{
 		double win;
@@ -1004,7 +1005,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		wins += 1-result;
 		budgetUsed++;
 		playouts++;
-		return result;
+		return  1-result;
 		
 	}
 	//create chilren
@@ -1058,7 +1059,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		shot(*nextstate, (node->m_children[child_in_round[0]]).get(), rd, buget, nu, np, nw,false, po_res_mode, pw,bestmove);
 		budgetUsed += nu;
 		playouts += np;
-		wins += 1.0*np-nw;
+		wins += 1.0*np - nw;
 		//update
 		node->update_shot(np, nw);
 	}
@@ -1071,12 +1072,48 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 
 	if (budgetNode <= child_in_round.size())
 	{
+		int usedinthisfor = 0;
+		double winsthisfor = 0;
 		for (int tmpi = 0; tmpi < child_in_round.size(); tmpi++)
 		{
 			node->inflate_all_children();
 			int child_idx = child_in_round[tmpi];
 			if (budgetUsed >= buget)
-				return 0;
+			{
+				//sort
+				{
+					int tpn = child_in_round.size();
+					for (int tmpi = 0; tmpi < tpn - 1; tmpi++) {
+						for (int tmpj = 0; tmpj < tpn - tmpi - 1; tmpj++) {
+							double child_rp_count = 1.0* node->m_children[child_in_round[tmpj]]->shot_po_count;
+							double child_rp_win = node->m_children[child_in_round[tmpj]]->shot_wins;
+							double child_rp_counto = 1.0* node->m_children[child_in_round[tmpj + 1]]->shot_po_count;
+							double child_rp_wino = node->m_children[child_in_round[tmpj + 1]]->shot_wins;
+							if (child_rp_win / child_rp_count < child_rp_wino / child_rp_counto) {
+								int tempi = child_in_round[tmpj];
+								child_in_round[tmpj] = child_in_round[tmpj + 1];
+								child_in_round[tmpj + 1] = tempi;
+							}
+						}
+					}
+				}
+				double best_rate = node->m_children[child_in_round[0]]->shot_wins / node->m_children[child_in_round[0]]->shot_po_count;
+				
+				double reswin;
+				if (mixmax)
+				{
+					reswin = (1 - best_rate) * usedinthisfor;
+					wins += (best_rate)* usedinthisfor;
+				}
+				else
+				{
+					reswin = wins;
+				}
+				//update
+				node->update_shot(usedinthisfor, reswin);
+				return 1 - best_rate;
+			}
+				
 			auto& nodex = node->m_children[child_idx];
 			//myprintf("child_idx %d,child_in_round.size() %d,node->m_children %d\n", child_idx, child_in_round.size(), node->m_children.size());
 			auto nodexx = nodex.get();
@@ -1091,11 +1128,13 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 				nu = np = nw = 0;
 				//myprintf("color %d\n", nextstate->get_to_move());
 				shot(*nextstate, (node->m_children[child_idx].get()), rd, 1, nu, np, nw,false, po_res_mode, pw,bestmove);
+				usedinthisfor +=nu;
+				winsthisfor += nw;
 				budgetUsed += nu;
 				playouts += np;
 				wins += 1.0*np - nw;
 				//update
-				node->update_shot(np, nw);
+				//node->update_shot(np, nw);
 				playedBudget++;
 			}
 		}
@@ -1189,7 +1228,7 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 				auto nextstate = std::make_unique<GameState>(currstate);
 				nextstate->play_move(node->m_children[child_in_round[tmpi]]->get_move());
 
-				shot(*nextstate, (node->m_children[child_in_round[tmpi]]).get(), rd, po_times, nu, np, nw, false, po_res_mode, pw,bestmove);
+				double winrate = shot(*nextstate, (node->m_children[child_in_round[tmpi]]).get(), rd, po_times, nu, np, nw, false, po_res_mode, pw,bestmove);
 				//node->m_children[child_in_round[tmpi]]->update_shot(np,nw);
 				//if(po_times!= nu)
 				//	myprintf("po_times %d,budgetUsed %d,playouts %d,after_po %d\n", po_times, nu, np, node->m_children[child_in_round[tmpi]]->shot_po_count);
@@ -1202,8 +1241,12 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 				}
 				budgetUsed += nu;
 				playouts += np;
-				wins += 1.0*np-nw;
-				node->update_shot(np, nw);
+				if (!mixmax)
+				{
+					wins += 1.0*np - nw;
+					node->update_shot(np, nw);
+				}
+
 				//update
 			}
 				if (budgetUsed >= buget)
@@ -1284,8 +1327,19 @@ int UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buget,i
 		//	myprintf("update:buget %d, budgetUsed %d, playouts %d, wins %f, \n", buget, budgetUsed, playouts, wins);
 	}
 	//thesis algorithm:return first move of S
-	if (child_in_round.size()==1)
+	if (isroot)
 		return node->m_children[child_in_round[0]].get_move();
+	if (mixmax)
+	{
+		double best_rate = node->m_children[child_in_round[0]]->shot_wins / node->m_children[child_in_round[0]]->shot_po_count;
+		wins += (best_rate)* budgetUsed;
+		//update
+		node->update_shot(budgetUsed, (1 - best_rate) * budgetUsed);
+		return 1 - best_rate;
+		
+	}
+	return node->m_children[child_in_round[0]].get_move();
+	
 }
 std::vector<double> UCTSearch::think_hist(int color, passflag_t passflag)
 {
