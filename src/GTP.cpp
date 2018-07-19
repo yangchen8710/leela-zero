@@ -468,8 +468,10 @@ bool GTP::execute(GameState & game, std::string xinput) {
 		int games = 0;
 		int wins = 0;
 		int nowcolor;
+		
 		while (1)
 		{
+			int movecount = 0;
 			Training::clear_training();
 			game.reset_game();
 			search = std::make_unique<UCTSearch>(game);
@@ -486,6 +488,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 				//move = search->valuemove(nowcolor);
 				elapsed = time(NULL);
 				double elapsed_centis = difftime(elapsed, start);
+				movecount++;
 				//gtp_printf(id, "player1 time: %fs\n", elapsed_centis);
 
 				game.play_move(move);
@@ -500,6 +503,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 				//move = search->valuemove(nowcolor);
 				elapsed = time(NULL);
 				elapsed_centis = difftime(elapsed, start);
+				movecount++;
 				//gtp_printf(id, "player2 time: %fs\n", elapsed_centis);
 				if (move == -1 || move == -2)
 				{
@@ -507,6 +511,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 					if (move == -1)
 						wins++;
 					game.display_state();
+					Utils::myprintf("moves %d\n", movecount);
 					Utils::myprintf("games %d, wins %d\n", games, wins);
 					break;
 				}
