@@ -470,41 +470,45 @@ bool GTP::execute(GameState & game, std::string xinput) {
 			Training::clear_training();
 			game.reset_game();
 			search = std::make_unique<UCTSearch>(game);
-			time_t   start, elapsed, start2, elapsed2 ;
-			game.set_to_move(who1);
-			start = time(NULL);
-			//move = search->think_shot(who1, 2, -2, 5000, 2,0);
-			move = search->think(who1);
-			elapsed = time(NULL);
-			double elapsed_centis = difftime(elapsed, start);
-			gtp_printf(id, "player1 time: %fs\n", elapsed_centis);
-			if (move == -1 || move == -2)
+			while (1)
 			{
-				game.display_state();
-				break;
-			}
-			
-			game.play_move(move);
-			vertex = game.move_to_text(move);
-			gtp_printf(id, "0:%s", vertex.c_str());
+				time_t   start, elapsed, start2, elapsed2;
+				game.set_to_move(who1);
+				start = time(NULL);
+				//move = search->think_shot(who1, 2, -2, 5000, 2,0);
+				move = search->think(who1);
+				elapsed = time(NULL);
+				double elapsed_centis = difftime(elapsed, start);
+				gtp_printf(id, "player1 time: %fs\n", elapsed_centis);
+				if (move == -1 || move == -2)
+				{
+					game.display_state();
+					break;
+				}
 
-			game.set_to_move(who2);
-			start = time(NULL);
-			move = search->think_shot(who2, 2, -2, 50000, 2, 0);
-			elapsed = time(NULL);
-		    elapsed_centis = difftime(elapsed, start);
-			gtp_printf(id, "player2 time: %fs\n", elapsed_centis);
-			if (move == -1 || move == -2)
-			{
+				game.play_move(move);
+				vertex = game.move_to_text(move);
+				gtp_printf(id, "0:%s", vertex.c_str());
+
+				game.set_to_move(who2);
+				start = time(NULL);
+				move = search->think_shot(who2, 2, -2, 50000, 2, 0);
+				elapsed = time(NULL);
+				elapsed_centis = difftime(elapsed, start);
+				gtp_printf(id, "player2 time: %fs\n", elapsed_centis);
+				if (move == -1 || move == -2)
+				{
+					game.display_state();
+					break;
+				}
+				vertex = game.move_to_text(move);
+				gtp_printf(id, "1:%s", vertex.c_str());
+				count += 2;
+				game.play_move(move);
 				game.display_state();
-				break;
 			}
-			vertex = game.move_to_text(move);
-			gtp_printf(id, "1:%s", vertex.c_str());
-			count += 2;
-			game.play_move(move);
-			game.display_state();
 		}
+
 
 
 
