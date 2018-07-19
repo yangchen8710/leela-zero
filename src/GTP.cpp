@@ -465,6 +465,8 @@ bool GTP::execute(GameState & game, std::string xinput) {
 		int move;
 		std::string vertex;
 		int count = 0;
+		int games = 0;
+		int wins = 0;
 		while (1)
 		{
 			Training::clear_training();
@@ -480,7 +482,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 				move = search->policymove(who1);
 				elapsed = time(NULL);
 				double elapsed_centis = difftime(elapsed, start);
-				gtp_printf(id, "player1 time: %fs\n", elapsed_centis);
+				//gtp_printf(id, "player1 time: %fs\n", elapsed_centis);
 				if (move == -1 || move == -2)
 				{
 					game.display_state();
@@ -489,7 +491,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 
 				game.play_move(move);
 				vertex = game.move_to_text(move);
-				gtp_printf(id, "0:%s", vertex.c_str());
+				//gtp_printf(id, "0:%s", vertex.c_str());
 
 				game.set_to_move(who2);
 				start = time(NULL);
@@ -497,17 +499,22 @@ bool GTP::execute(GameState & game, std::string xinput) {
 				move = search->valuemove(who2);
 				elapsed = time(NULL);
 				elapsed_centis = difftime(elapsed, start);
-				gtp_printf(id, "player2 time: %fs\n", elapsed_centis);
+				//gtp_printf(id, "player2 time: %fs\n", elapsed_centis);
 				if (move == -1 || move == -2)
 				{
+					games++;
+					if (move == -1)
+						wins++;
 					game.display_state();
+					Utils::myprintf("games %d, wins %d\n", games, wins);
 					break;
 				}
 				vertex = game.move_to_text(move);
-				gtp_printf(id, "1:%s", vertex.c_str());
+				//gtp_printf(id, "1:%s", vertex.c_str());
+				
 				count += 2;
 				game.play_move(move);
-				game.display_state();
+				//game.display_state();
 			}
 		}
 
