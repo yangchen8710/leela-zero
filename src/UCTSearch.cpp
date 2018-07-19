@@ -951,7 +951,7 @@ double UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buge
 	//myprintf("buget %d, budgetUsed %d, playouts %d, wins %d, \n", buget, budgetUsed, playouts, wins);
 		
 	//thesis algorithm:board is terminal
-	int mixmax = 1;
+	int mixmax = 0;
 	if (node->m_children.size() == 1)//terminal
 	{
 		double win;
@@ -1080,38 +1080,39 @@ double UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buge
 			int child_idx = child_in_round[tmpi];
 			if (budgetUsed >= buget)
 			{
-				//sort
-				{
-					int tpn = child_in_round.size();
-					for (int tmpi = 0; tmpi < tpn - 1; tmpi++) {
-						for (int tmpj = 0; tmpj < tpn - tmpi - 1; tmpj++) {
-							double child_rp_count = 1.0* node->m_children[child_in_round[tmpj]]->shot_po_count;
-							double child_rp_win = node->m_children[child_in_round[tmpj]]->shot_wins;
-							double child_rp_counto = 1.0* node->m_children[child_in_round[tmpj + 1]]->shot_po_count;
-							double child_rp_wino = node->m_children[child_in_round[tmpj + 1]]->shot_wins;
-							if (child_rp_win / child_rp_count < child_rp_wino / child_rp_counto) {
-								int tempi = child_in_round[tmpj];
-								child_in_round[tmpj] = child_in_round[tmpj + 1];
-								child_in_round[tmpj + 1] = tempi;
-							}
-						}
-					}
-				}
-				double best_rate = node->m_children[child_in_round[0]]->shot_wins / node->m_children[child_in_round[0]]->shot_po_count;
+				
 				
 				double reswin;
 				if (mixmax)
 				{
+					//sort
+					{
+						int tpn = child_in_round.size();
+						for (int tmpi = 0; tmpi < tpn - 1; tmpi++) {
+							for (int tmpj = 0; tmpj < tpn - tmpi - 1; tmpj++) {
+								double child_rp_count = 1.0* node->m_children[child_in_round[tmpj]]->shot_po_count;
+								double child_rp_win = node->m_children[child_in_round[tmpj]]->shot_wins;
+								double child_rp_counto = 1.0* node->m_children[child_in_round[tmpj + 1]]->shot_po_count;
+								double child_rp_wino = node->m_children[child_in_round[tmpj + 1]]->shot_wins;
+								if (child_rp_win / child_rp_count < child_rp_wino / child_rp_counto) {
+									int tempi = child_in_round[tmpj];
+									child_in_round[tmpj] = child_in_round[tmpj + 1];
+									child_in_round[tmpj + 1] = tempi;
+								}
+							}
+						}
+					}
+					double best_rate = node->m_children[child_in_round[0]]->shot_wins / node->m_children[child_in_round[0]]->shot_po_count;
 					reswin = (1 - best_rate) * usedinthisfor;
 					wins += (best_rate)* usedinthisfor;
 				}
 				else
 				{
-					reswin = wins;
+					reswin = winsthisfor;
 				}
 				//update
 				node->update_shot(usedinthisfor, reswin);
-				return 1 - best_rate;
+				return winsthisfor/usedinthisfor;
 			}
 				
 			auto& nodex = node->m_children[child_idx];
