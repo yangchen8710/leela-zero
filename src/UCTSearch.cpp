@@ -1434,6 +1434,12 @@ int UCTSearch::think_shot(int color, passflag_t passflag,int bestmove,int coin,i
 	return resmove;
 }
 int UCTSearch::policymove(int color, passflag_t passflag) {
+	const auto raw_netlist = Network::get_scored_moves(
+		&m_rootstate, Network::Ensemble::RANDOM_SYMMETRY);
+	if (raw_netlist.winrate > 0.95)
+		return -1;
+	if (raw_netlist.winrate < 0.05)
+		return -2;
 	update_root();
 	Random rd = Random(time(NULL));
 	srand((unsigned)time(NULL));
