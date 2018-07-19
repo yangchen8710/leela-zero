@@ -1032,7 +1032,7 @@ double UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buge
 	}
 	//myprintf("pwmode=%d,nsize %d\n", pw,nsize);
 	int added = 0;
-	for (int tmpj = 0; added < 2; tmpj++)
+	for (int tmpj = 0; added < 8; tmpj++)
 	{
 		//myprintf("%f\n",node->m_children[tmpj].get_score());
 		if (tmpj >= node->m_children.size())
