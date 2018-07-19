@@ -1032,7 +1032,7 @@ double UCTSearch::shot(GameState& currstate, UCTNode* node, Random& rd, int buge
 	}
 	//myprintf("pwmode=%d,nsize %d\n", pw,nsize);
 	int added = 0;
-	for (int tmpj = 0; added < 8; tmpj++)
+	for (int tmpj = 0; added < 2; tmpj++)
 	{
 		//myprintf("%f\n",node->m_children[tmpj].get_score());
 		if (tmpj >= node->m_children.size())
@@ -1459,7 +1459,7 @@ int UCTSearch::valuemove(int color, passflag_t passflag) {
 	m_root->prepare_root_node(color, m_nodes, m_rootstate);
 	double best_value=1.0;
 	int best_move=0;
-	for (int i = 0; i < m_root->m_children.size(); i++)
+	for (int i = 0; i < 2; i++)
 	{
 		auto nextstate = std::make_unique<GameState>(m_rootstate);
 		int move = m_root->m_children[i]->get_move();
