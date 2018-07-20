@@ -482,9 +482,9 @@ bool GTP::execute(GameState & game, std::string xinput) {
 				start = time(NULL);
 				nowcolor = who1;
 				Utils::myprintf("player %d,", nowcolor);
-				//move = search->think_shot(nowcolor, 2, -2, 5000, 2,0);
+				move = search->think_shot(nowcolor, 2, -2, 5000, 2,0,0);
 				//move = search->think(nowcolor);
-				move = search->policymove(nowcolor);
+				//move = search->policymove(nowcolor);
 				//move = search->valuemove(nowcolor);
 				elapsed = time(NULL);
 				double elapsed_centis = difftime(elapsed, start);
@@ -500,7 +500,8 @@ bool GTP::execute(GameState & game, std::string xinput) {
 				start = time(NULL);
 				Utils::myprintf("player %d,", nowcolor);
 				//move = search->think_shot(who2, 2, -2, 10000, 2, 1);
-				move = search->valuemove(nowcolor);
+				move = search->think_shot(nowcolor, 2, -2, 5000, 2, 0, 1);
+				//move = search->valuemove(nowcolor);
 				//move = search->policymove(nowcolor);
 				elapsed = time(NULL);
 				elapsed_centis = difftime(elapsed, start);
@@ -604,7 +605,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 					{
 						game.set_to_move(who);
 						myprintf("start %d time shot\n", ti + 1);
-						search->think_shot(who, 0, move, 50000, modex, 0);
+						search->think_shot(who, 0, move, 50000, modex, 0,0);
 
 					}
 					//vertex = game.move_to_text(move);
