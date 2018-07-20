@@ -1062,7 +1062,7 @@ double UCTSearch::shot(GameState& currstate,
 		}
 			
 	}
-	myprintf("child_in_round.size() %d,node->m_children %d\n", child_in_round.size(), node->m_children.size());
+	//myprintf("child_in_round.size() %d,node->m_children %d\n", child_in_round.size(), node->m_children.size());
 	//myprintf("\n");
 	//thesis algorithm:if|S|==1
 	if (child_in_round.size() == 1)
