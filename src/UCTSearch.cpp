@@ -939,7 +939,7 @@ int progressivew(int n)
 	{
 		double bei = 1.0;
 		for (int y = 0; y < x - 1; y++)
-			bei = bei * 1.4;
+			bei = bei * 3.14;
 		t = t + 40 * bei;
 		if (n < t)
 			return x + 1;
@@ -1037,18 +1037,19 @@ double UCTSearch::shot(GameState& currstate,
 	std::vector<int> child_in_round;
 	int bugetSum = node->shot_po_count + buget;
 	int nsize;
+	int added = 0;
+	if (width < 0)
+		nsize = node->m_children.size() - 1;
+	else
+		nsize = width;
 	if (pw == 1)
 	{
-		int pwn = progressivew(bugetSum);
-		nsize = node->m_children.size() > pwn+1 ? pwn : node->m_children.size();
+		nsize = progressivew(bugetSum);
 	}
-	else
-	{
-		nsize = node->m_children.size() - 1;
-	}
+
 	//myprintf("pwmode=%d,nsize %d\n", pw,nsize);
-	int added = 0;
-	for (int tmpj = 0; added < width; tmpj++)
+
+	for (int tmpj = 0; added < nsize; tmpj++)
 	{
 		//myprintf("%f\n",node->m_children[tmpj].get_score());
 		if (tmpj >= node->m_children.size())
