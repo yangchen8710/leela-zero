@@ -95,7 +95,7 @@ public:
 	int think(int color, passflag_t passflag = NORMAL);
 	int policymove(int color, passflag_t passflag = NORMAL);
 	int valuemove(int color, passflag_t passflag = NORMAL);
-	int think_shot(int color, passflag_t passflag, int bestmove, int coin, int poresmode , int pw , int mixmax);
+	int think_shot(int color, passflag_t passflag, int bestmove, int coin, int poresmode , int pw , int mixmax, int width);
 	int think_sh(int color, passflag_t passflag = NORMAL,int test = 0);
 	int gen_random_move(GameState& state, Random rd);
 	int gen_policy_move(GameState& state, Random rd);
@@ -126,7 +126,8 @@ public:
 		int po_res_mode, 
 		int sim_res_mode,
 		int bestmove,
-		int mixmax);
+		int mixmax,
+		int width);
 private:
     float get_min_psa_ratio() const;
     void dump_stats(FastState& state, UCTNode& parent);
