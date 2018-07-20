@@ -1062,7 +1062,7 @@ double UCTSearch::shot(GameState& currstate,
 		}
 			
 	}
-	//myprintf("child_in_round.size() %d,node->m_children %d\n", child_in_round.size(), node->m_children.size());
+	myprintf("child_in_round.size() %d,node->m_children %d\n", child_in_round.size(), node->m_children.size());
 	//myprintf("\n");
 	//thesis algorithm:if|S|==1
 	if (child_in_round.size() == 1)
@@ -1414,9 +1414,9 @@ int UCTSearch::think_shot(int color, passflag_t passflag,int bestmove,int coin,i
 
 	const auto raw_netlist = Network::get_scored_moves(
 		&m_rootstate, Network::Ensemble::RANDOM_SYMMETRY);
-	if (raw_netlist.winrate > 0.95)
+	if (raw_netlist.winrate > 0.98)
 		return -1;
-	if (raw_netlist.winrate < 0.05)
+	if (raw_netlist.winrate < 0.02)
 		return -2;
 
 	// Start counting time for us
@@ -1453,9 +1453,9 @@ int UCTSearch::think_shot(int color, passflag_t passflag,int bestmove,int coin,i
 int UCTSearch::policymove(int color, passflag_t passflag) {
 	const auto raw_netlist = Network::get_scored_moves(
 		&m_rootstate, Network::Ensemble::RANDOM_SYMMETRY);
-	if (raw_netlist.winrate > 0.95)
+	if (raw_netlist.winrate > 0.98)
 		return -1;
-	if (raw_netlist.winrate < 0.05)
+	if (raw_netlist.winrate < 0.02)
 		return -2;
 	update_root();
 	Random rd = Random(time(NULL));
@@ -1470,9 +1470,9 @@ int UCTSearch::policymove(int color, passflag_t passflag) {
 int UCTSearch::valuemove(int color, passflag_t passflag) {
 	const auto raw_netlist = Network::get_scored_moves(
 		&m_rootstate, Network::Ensemble::RANDOM_SYMMETRY);
-	if (raw_netlist.winrate > 0.95)
+	if (raw_netlist.winrate > 0.98)
 		return -1;
-	if (raw_netlist.winrate < 0.05)
+	if (raw_netlist.winrate < 0.02)
 		return -2;
 	update_root();
 	Random rd = Random(time(NULL));
