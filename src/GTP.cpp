@@ -482,7 +482,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 				start = time(NULL);
 				nowcolor = who1;
 				Utils::myprintf("player %d,", nowcolor);
-				move = search->think_shot(nowcolor, 2, -2, 5000, 2,0,1,4);
+				move = search->think_shot(nowcolor, 2, -2, 5000, 2,0,1,-2);
 				//move = search->think(nowcolor);
 				//move = search->policymove(nowcolor);
 				//move = search->valuemove(nowcolor);
