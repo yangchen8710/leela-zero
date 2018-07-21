@@ -939,7 +939,7 @@ int progressivew(int n)
 	{
 		double bei = 1.0;
 		for (int y = 0; y < x - 1; y++)
-			bei = bei * 2.5;
+			bei = bei * 3.14;
 		t = t + 40 * bei;
 		if (n < t)
 			return x + 1;
