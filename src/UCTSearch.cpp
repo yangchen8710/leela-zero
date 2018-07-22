@@ -1500,22 +1500,22 @@ int UCTSearch::valuemove(int color, passflag_t passflag) {
 	}
 	 best_value = 1.0;
 	 best_move = 0;
-	for (int i = 0; i < 2; i++)
-	{
-		auto nextstate = std::make_unique<GameState>(m_rootstate);
-		int move = m_root->m_children[i]->get_move();
-		if (move == -1)
-			continue;
-		nextstate->play_move(move);
-		const auto raw_netlist = Network::get_scored_moves(
-			nextstate.get(), Network::Ensemble::RANDOM_SYMMETRY);
-		if (best_value > raw_netlist.winrate)
-		{
-			best_value = raw_netlist.winrate;
-			best_move = i;
-		}
+	 for (int i = 0; i < m_root->m_children.size(); i++)
+	 {
+		 auto nextstate = std::make_unique<GameState>(m_rootstate);
+		 int move = m_root->m_children[i]->get_move();
+		 if (move == -1)
+			 continue;
+		 nextstate->play_move(move);
+		 const auto raw_netlist = Network::get_scored_moves(
+			 nextstate.get(), Network::Ensemble::RANDOM_SYMMETRY);
+		 if (best_value > raw_netlist.winrate)
+		 {
+			 best_value = raw_netlist.winrate;
+			 best_move = i;
+		 }
 
-	}
+	 }
 	myprintf("bestmove %d,best_value:%f\n", best_move,1.0 - best_value);
 	return  m_root->m_children[best_move]->get_move();
 }
