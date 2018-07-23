@@ -1327,7 +1327,7 @@ double UCTSearch::shot(GameState& currstate,
 			{
 				if (m_root->m_children[child_in_round[tmpi]]->get_move() == bestmove)
 				{
-					myprintf("best move in round%d,buget %d, budgetUsed %d, playouts %d, wins %f\n", round_no, buget, budgetUsed, playouts, wins);
+					myprintf("size %d,best move in round%d,buget %d, budgetUsed %d, playouts %d, wins %f\n", child_in_round.size(), round_no, buget, budgetUsed, playouts, wins);
 
 					successflag = 1;
 					break;
