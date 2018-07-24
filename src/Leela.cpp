@@ -229,7 +229,7 @@ static void parse_commandline(int argc, char *argv[]) {
     if (vm.count("dumbpass")) {
         cfg_dumbpass = true;
     }
-	cfg_max_playouts = 5000;
+	cfg_max_playouts = 10000;
     if (vm.count("playouts")) {
         cfg_max_playouts = vm["playouts"].as<int>();
         if (!vm.count("noponder")) {
