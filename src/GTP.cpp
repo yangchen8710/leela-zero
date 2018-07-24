@@ -504,6 +504,7 @@ bool GTP::execute(GameState & game, std::string xinput) {
 				game.play_move(move);
 				vertex = game.move_to_text(move);
 				//gtp_printf(id, "0:%s", vertex.c_str());
+				game.display_state();
 
 				game.set_to_move(who2);
 				nowcolor = who2;
@@ -527,12 +528,16 @@ bool GTP::execute(GameState & game, std::string xinput) {
 					Utils::myprintf("games %d, wins %d\n", games, wins);
 					break;
 				}
+				else
+				{
+					game.display_state();
+				}
 				vertex = game.move_to_text(move);
 				//gtp_printf(id, "1:%s", vertex.c_str());
 				
 				count += 2;
 				game.play_move(move);
-				//game.display_state();
+				game.display_state();
 			}
 		}
 
