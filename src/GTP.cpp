@@ -366,7 +366,8 @@ bool GTP::execute(GameState & game, std::string xinput) {
             // start thinking
             {
                 game.set_to_move(who);
-                int move = search->think(who);
+                //int move = search->think(who);
+				int move = search->think_shot(who, 2, -2, 50000, 2, 1, 1, -2);
                 game.play_move(move);
 
                 std::string vertex = game.move_to_text(move);
