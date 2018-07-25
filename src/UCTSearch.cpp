@@ -1346,7 +1346,10 @@ double UCTSearch::shot(GameState& currstate,
 	}
 	//thesis algorithm:return first move of S
 	if (isroot)
+	{
+		myprintf("update:buget %d, budgetUsed %d, playouts %d, wins %f,bestrate \n", buget, budgetUsed, playouts, wins, node->m_children[child_in_round[0]]->shot_wins/ node->m_children[child_in_round[0]]->shot_po_count);
 		return node->m_children[child_in_round[0]].get_move();
+	}
 	if (mixmax)
 	{
 		double best_rate = node->m_children[child_in_round[0]]->shot_wins / node->m_children[child_in_round[0]]->shot_po_count;
