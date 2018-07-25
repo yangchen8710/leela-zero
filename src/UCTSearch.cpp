@@ -1414,8 +1414,8 @@ int UCTSearch::think_shot(int color, passflag_t passflag,int bestmove,int coin,i
 
 	const auto raw_netlist = Network::get_scored_moves(
 		&m_rootstate, Network::Ensemble::RANDOM_SYMMETRY);
-	if (raw_netlist.winrate > 0.98)
-		return -1;
+	//if (raw_netlist.winrate > 0.98)
+	//	return -1;
 	if (raw_netlist.winrate < 0.02)
 		return -2;
 
